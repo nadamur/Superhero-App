@@ -1,7 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const app = express();
-const port = 5000;
+const port = 8080;
 const path = require('path');
 const mongoose = require('mongoose');
 const fs = require('fs');
@@ -13,7 +13,6 @@ const userRoutes = require('./authentication.js');
 const cookieParser = require('cookie-parser');
 app.use(express.static(mainDir));
 app.use(express.static(clientDir));
-app.use(express.json());
 app.use(userRoutes);
 app.use(cookieParser());
 
@@ -353,7 +352,7 @@ app.get('/api/lists/info/:listName', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    res.sendFile('index.html', { root: clientDir });
+    res.sendFile('index.js', { root: clientDir });
 });
 
 app.listen(port, () => {
