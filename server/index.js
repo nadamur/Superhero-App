@@ -1,14 +1,27 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const app = express();
 const port = 5000;
 const path = require('path');
+const mongoose = require('mongoose');
 const fs = require('fs');
 const superheroesInfo = require('../superhero_info.json');
 const superheroesPowers = require('../superhero_powers.json');
 const mainDir = path.join(__dirname, '../');
 const clientDir = path.join(__dirname, '../client');
+const userRoutes = require('./authentication.js');
+const cookieParser = require('cookie-parser');
 app.use(express.static(mainDir));
 app.use(express.static(clientDir));
+app.use(express.json());
+app.use(userRoutes);
+app.use(cookieParser());
+
+// database connection
+const dbURI = 'mongodb+srv://nadamurad2003:AUeHvPkfedepWhBQ@cluster0.8dcttlz.mongodb.net/node-auth';
+mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex:true })
+  .then((result) => app.listen(3000))
+  .catch((err) => console.log(err));
 
 //required functions
 //function takes a pattern, returns a set number of hero ids that match given pattern
