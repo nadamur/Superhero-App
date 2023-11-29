@@ -12,6 +12,7 @@ function App() {
   const [selectedResults, setSelectedResults] = useState([]);
   const [favoriteLists, setFavoriteLists] = useState([]);
   const [listNamesToDelete, setListNamesToDelete] = useState([]);
+  const listItems = [];
   // Add more state variables as needed
 
   useEffect(() => {
@@ -60,6 +61,35 @@ function App() {
       console.error('Error fetching favorite lists:', error);
     }
   };
+  //function to get all hero info
+  const getHero = async (id) => {
+    try {
+      const response = await fetch(`/api/superheroes/${id}`);
+      if (!response.ok) {
+        throw new Error('Request failed');
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error:', error);
+      return null; // Handle the error gracefully
+    }
+  }
+  //function to get all hero powers
+  const getPowers = async (id) => {
+    try {
+      const response = await fetch(`/api/superheroes/${id}/power`);
+      if (!response.ok) {
+        throw new Error('Request failed');
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error:', error);
+      return null; // Handle the error gracefully
+    }
+  }
+
 
   //function to retrieve ids of heroes that match search
   const searchSuperheroes = async () => {
@@ -75,20 +105,44 @@ function App() {
         console.log(data.ids);
         setSearchResultIds(data.ids);
         setErrorMessage('');
+        displayHeroes(data);
         // if(criteria){
         //   displayHeroes(data, criteria);
         // }else{
         //   displayHeroes(data, sortCriteria = 0);
         // }
       }
-      
     } catch (error) {
       console.error('Error:', error);
     }
   };
-  const displayHeroes= async (data, sortCriteria) =>{
-
-  }
+  const displayHeroes = async (data, sortCriteria) => {
+    const listItems = [];
+    for (const i of data.ids) {
+      const hero = await getHero(i);
+      const powers = await getPowers(i);
+  
+      const heroAttributes = Object.entries(hero)
+        .filter(([key]) => key !== 'id') // Exclude the "id" property
+        .map(([key, value]) => (
+          <span key={key} style={{ fontSize: '14px' }}>{`${key}: ${value}, `}</span>
+        ));
+  
+      const listItem = (
+        <li key={i} data-id={i} data-name={hero.name} data-Race={hero.Race} data-Publisher={hero.Publisher}>
+          <strong style={{ color: '#007acc' }}>{hero.name} </strong>
+          <br />
+          <span style={{ fontSize: '14px' }}>
+            Powers: {powers === 'No Powers' ? 'None' : powers.length > 1 ? powers.powers.join(', ') : powers.powers}
+          </span>
+          {heroAttributes}
+        </li>
+      );
+  
+      listItems.push(listItem);
+    }
+    setSearchResults(listItems);
+  };
 
   const handleAddList = async () => {
     // Implement adding a new list
@@ -177,10 +231,8 @@ function App() {
         <div id="searchResults">
           {errorMessage && <p>{errorMessage}</p>}
           <ul>
-            {searchResultIds.map((hero) => (
-              <li key={hero.id}>{hero.name}</li>
-            ))}
-          </ul>
+          {searchResults.map((item, index) => React.cloneElement(item, { key: index }))}
+        </ul>
           
           {/* Results will be displayed here */}
         </div>
