@@ -1,8 +1,9 @@
 // App.js
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link, Navigate } from 'react-router-dom';
 import './App.css'; // Import your CSS file
 import Login from './LogIn.js';
+import SignUp from './SignUp.js';
 
 
 function App() {
@@ -199,22 +200,23 @@ function App() {
   };
 
   return (
+    <>
     <Router>
-        {/* Navigation Links */}
-        <nav>
-          <ul className="nav-links">
-            <li>
-              <Link to="/" className="nav-button">Home</Link>
-            </li>
-            <li>
-              <Link to="/login" className="nav-button">Login</Link>
-            </li>
-          </ul>
-        </nav>
         <Routes>
           <Route path="/login" element ={<Login />}/>
+          <Route path="/signup" element ={<SignUp />}/>
           <Route path="/" element ={
           <div>
+            <nav>
+              <ul className="nav-links">
+                <li>
+                  <Link to = "/login" className="nav-button">Log In</Link>
+                </li>
+                <li>
+                  <Link to="/signup" className="nav-button">Sign Up</Link>
+                </li>
+              </ul>
+            </nav>
             <div id="header">
               {/* Search */}
               <div id="searchContainer">
@@ -303,6 +305,7 @@ function App() {
           } />
         </Routes>
     </Router>
+    </>
   );
 }
 
