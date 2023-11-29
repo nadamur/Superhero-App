@@ -1,4 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+superhero_info.json
+superhero_powers.json
 
 # dependencies
 /node_modules
