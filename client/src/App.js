@@ -4,29 +4,32 @@ import './App.css'; // Import your CSS file
 
 
 function App() {
+  //search related
   const [pattern, setPattern] = useState('name');
   const [field, setField] = useState('');
   const [searchResultIds, setSearchResultIds] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [errorMessage, setErrorMessage] = useState('Your Search Results will be displayed here...');
+  const listItems = [];
+  //sorting lists
+  const [sortedSearchResults, setSortedSearchResults] = useState([]);
+  //selection
   const [selectedResults, setSelectedResults] = useState([]);
+  //fav lists
   const [favoriteLists, setFavoriteLists] = useState([]);
   const [listNamesToDelete, setListNamesToDelete] = useState([]);
-  const listItems = [];
   // Add more state variables as needed
 
   useEffect(() => {
     getFavLists();
+    displaySearch();
+    console.log('use');
     // Fetch initial data or perform any necessary setup
     // Similar to componentDidMount in class components
     // displayFavoriteListsButtons();
     // Example: deleteLists();
-  }, []); // runs once at start
+  }, [searchResults]);
 
-  const handleSearch = (event) => {
-    event.preventDefault();
-    searchSuperheroes();
-  };
   //function to return fav list names
   const getFavLists = async () => {
     // fetch the list names
@@ -92,9 +95,9 @@ function App() {
 
 
   //function to retrieve ids of heroes that match search
-  const searchSuperheroes = async () => {
+  const searchSuperheroes = async (criteria) => {
     try {
-      const response = await fetch(`/api/search/${pattern}/${field}/20`);
+      const response = await fetch(`/api/search/${pattern}/${field}/5`);
       if (!response.ok) {
         //if no heroes found, displays message
         setErrorMessage('No Heroes Found . . .');
@@ -102,58 +105,95 @@ function App() {
         //if heroes found
       }else{
         const data = await response.json();
-        console.log(data.ids);
         setSearchResultIds(data.ids);
         setErrorMessage('');
         displayHeroes(data);
-        // if(criteria){
-        //   displayHeroes(data, criteria);
-        // }else{
-        //   displayHeroes(data, sortCriteria = 0);
-        // }
+        
       }
     } catch (error) {
       console.error('Error:', error);
     }
   };
-  const displayHeroes = async (data, sortCriteria) => {
-    const listItems = [];
+
+  //displays search results
+  const displaySearch = () =>{
+    if(searchResults){
+      // console.log('unsorted:')
+      // searchResults.forEach((hero)=>{
+      //   console.log(hero.props.race);
+      // })
+      return (
+        <ul>
+          {searchResults.map((item, index) => React.cloneElement(item, { key: index }))}
+        </ul>
+      );
+    }
+    
+  }
+
+  //gives heroes attributes and pushes them to search results
+  const displayHeroes = async (data) => {
     for (const i of data.ids) {
       const hero = await getHero(i);
       const powers = await getPowers(i);
-  
       const heroAttributes = Object.entries(hero)
-        .filter(([key]) => key !== 'id') // Exclude the "id" property
+        .filter(([key]) => key !== 'id') // exclude the "id" property
         .map(([key, value]) => (
           <span key={key} style={{ fontSize: '14px' }}>{`${key}: ${value}, `}</span>
         ));
-  
-      const listItem = (
-        <li key={i} data-id={i} data-name={hero.name} data-Race={hero.Race} data-Publisher={hero.Publisher}>
+      
+      let listItem = (
+        <li key={i} id={i} name={hero.name} race={hero.Race} publisher={hero.Publisher}>
           <strong style={{ color: '#007acc' }}>{hero.name} </strong>
           <br />
           <span style={{ fontSize: '14px' }}>
-            Powers: {powers === 'No Powers' ? 'None' : powers.length > 1 ? powers.powers.join(', ') : powers.powers}
+            Powers: {powers === 'No Powers' ? 'None' : powers.powers.length > 1 ? powers.powers.join(', ') : powers.powers}
           </span>
           {heroAttributes}
         </li>
       );
-  
+      if(powers != 'No Powers'){
+        listItem = React.cloneElement(listItem, {power: powers.powers});
+      }
       listItems.push(listItem);
     }
     setSearchResults(listItems);
   };
+  
+  //sorts results based on criteria
+  const sortResults = (criteria) =>{
+    const sortedList = [...searchResults];
+    sortedList.sort((a, b) => {
+      switch (criteria){
+        case 'name':
+          const nameA = a.props.name;
+          const nameB = b.props.name;
+          return nameA.localeCompare(nameB);
+        case 'race':
+          const raceA = a.props.race;
+          const raceB = b.props.race;
+          return raceA.localeCompare(raceB);
+        case 'publisher':
+          const publisherA = a.props.publisher;
+          const publisherB = b.props.publisher;
+          return publisherA.localeCompare(publisherB);
+        case 'power':
+          const powerA = String(a.props.power);
+          const powerB = String(b.props.power);
+          return powerA.localeCompare(powerB);
+      }
+    });
+    console.log('sorted');
+    sortedList.forEach((hero)=>{
+      console.log(hero.props.race);
+    })
+    setSearchResults(sortedList);
+  }
 
-  const handleAddList = async () => {
-    // Implement adding a new list
-  };
-
-  const handleDeleteList = () => {
-    // Implement deleting a list
-  };
-
-  const handleSort = (criteria) => {
-    // Implement sorting functionality
+  //handles search/sort buttons
+  const handleSearch = (event) => {
+    event.preventDefault();
+    searchSuperheroes();
   };
 
   return (
@@ -220,23 +260,19 @@ function App() {
           <h2>Favorite List Heroes</h2>
         </div>
       </div>
-      <button id="sortByName">Sort by Name</button>
-      <button id="sortByRace">Sort by Race</button>
-      <button id="sortByPublisher">Sort by Publisher</button>
-      <button id="sortByPower">Sort by Power</button>
+      <button id="sortByName" onClick={()=>{sortResults('name')}}>Sort by Name</button>
+      <button id="sortByRace" onClick={()=>{sortResults('race')}}>Sort by Race</button>
+      <button id="sortByPublisher" onClick={()=>{sortResults('publisher')}}>Sort by Publisher</button>
+      <button id="sortByPower" onClick={()=>{sortResults('power')}}>Sort by Power</button>
 
       {/* Display Search Results */}
       <div id="searchAndListsContainer">
         {/* Search Results */}
         <div id="searchResults">
           {errorMessage && <p>{errorMessage}</p>}
-          <ul>
-          {searchResults.map((item, index) => React.cloneElement(item, { key: index }))}
-        </ul>
-          
+          {displaySearch()}
           {/* Results will be displayed here */}
         </div>
-
         {/* Added Lists Results */}
         <div id="addedListsResults">
           <ul>Your Heroes will be displayed here...</ul>
