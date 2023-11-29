@@ -1,0 +1,138 @@
+/* App.css */
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+#header {
+  display: flex;
+  justify-content: space-between;
+  background-color: #f0f0f0;
+  padding: 10px;
+}
+
+#searchContainer,
+#favouriteListsContainer {
+  flex: 1;
+  padding: 10px;
+}
+
+#searchContainer {
+  background-color: #f0f0f0;
+  padding: 10px;
+}
+
+#favouriteListsContainer {
+  background-color: #f0f0f0;
+  padding: 10px;
+  text-align: right;
+}
+
+#content {
+  padding: 20px;
+}
+
+#searchForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#searchCategory,
+#searchInput,
+#searchButton {
+  margin: 5px;
+}
+
+.large-square-button {
+  width: 150px;
+  height: 150px;
+  font-size: 16px;
+  padding: 10px;
+}
+
+h2 {
+  background-color: #007acc;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+button {
+  background-color: #007acc;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+  border-radius: 10px; /* Adjust the value to make it more or less rounded */
+}
+
+#searchResults ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+#searchResults ul li {
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#searchResults ul li.selected {
+  background-color: lightblue;
+}
+
+#searchAndListsContainer {
+  display: flex;
+}
+
+#searchResults,
+#addedListsResults {
+  flex: 1;
+  margin: 10px;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#listDetails {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+#sortListTitle {
+  flex: 1;
+  margin-right: 10px;
+}
+
+#favoriteListHeroesTitle {
+  flex: 1;
+  margin-left: 10px;
+}
+
+#signup {
+  text-align: center;
+}
+
+#signUpForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#signUpForm label,
+#signUpForm input {
+  margin: 5px;
+}
+
+#signUpButton {
+  margin-top: 10px;
+}
