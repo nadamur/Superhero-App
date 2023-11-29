@@ -1,6 +1,8 @@
 // App.js
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import './App.css'; // Import your CSS file
+import Login from './LogIn.js';
 
 
 function App() {
@@ -197,92 +199,110 @@ function App() {
   };
 
   return (
-    <div>
-      <div id="header">
-        {/* Search */}
-        <div id="searchContainer">
-          <h2>Search Superheroes</h2>
-          <form id="searchForm" onSubmit={handleSearch}>
-            <label htmlFor="searchInput">Search by:</label>
-            <select id="searchCategory">
-              <option value="name">Name</option>
-              <option value="race">Race</option>
-              <option value="publisher">Publisher</option>
-              <option value="power">Power</option>
-            </select>
-            <input type="text" id="searchInput" value={field} onChange={(e)=>setField(e.target.value)} placeholder="Search . . ." />
-            <button type="submit" id="searchButton">Search</button>
-          </form>
-        </div>
-
-        {/* Favourite Lists */}
-        <div id="favouriteListsContainer">
-          <h2>Favourite Lists</h2>
-          <button id="addListButton">Add List</button>
-          <form id="deleteForm">
-            <label htmlFor="listNamesToDelete">Delete List:</label>
-            <select id="listNamesToDelete">
-              {favoriteLists.map((listName) => (
-                <option key={listName}>{listName}</option>
-              ))}
-            </select>
-            <button type="submit" id="deleteListButton">Delete</button>
-          </form>
-          {/* favourite lists will be displayed here as buttons*/}
-          <ul id="favouriteLists">
-            {favoriteLists.map((listName) => (
-              <button key={listName}>
-                {listName}
-              </button>
-            ))}
+    <Router>
+        {/* Navigation Links */}
+        <nav>
+          <ul className="nav-links">
+            <li>
+              <Link to="/" className="nav-button">Home</Link>
+            </li>
+            <li>
+              <Link to="/login" className="nav-button">Login</Link>
+            </li>
           </ul>
-        </div>
-      </div>
+        </nav>
+        <Routes>
+          <Route path="/login" element ={<Login />}/>
+          <Route path="/" element ={
+          <div>
+            <div id="header">
+              {/* Search */}
+              <div id="searchContainer">
+                <h2>Search Superheroes</h2>
+                <form id="searchForm" onSubmit={handleSearch}>
+                  <label htmlFor="searchInput">Search by:</label>
+                  <select id="searchCategory">
+                    <option value="name">Name</option>
+                    <option value="race">Race</option>
+                    <option value="publisher">Publisher</option>
+                    <option value="power">Power</option>
+                  </select>
+                  <input type="text" id="searchInput" value={field} onChange={(e)=>setField(e.target.value)} placeholder="Search . . ." />
+                  <button type="submit" id="searchButton">Search</button>
+                </form>
+              </div>
 
-      {/* Display Superheroes in a List */}
-      <div id="listDetails">
-        {/* Modify the "Sort List" title section */}
-        <div id="sortListTitle">
-          <h2>Sort List: <span id="listName"></span></h2>
-          <form id="listsForm">
-            <label htmlFor="listNames">Add Selected Heroes to:</label>
-            <select id="listNames">
-              {favoriteLists.map((listName) => (
-                <option key={listName}>{listName}</option>
-              ))}
-            </select>
-            <button type="submit" id="listAddButton">Add</button>
-          </form>
-        </div>
+              {/* Favourite Lists */}
+              <div id="favouriteListsContainer">
+                <h2>Favourite Lists</h2>
+                <button id="addListButton">Add List</button>
+                <form id="deleteForm">
+                  <label htmlFor="listNamesToDelete">Delete List:</label>
+                  <select id="listNamesToDelete">
+                    {favoriteLists.map((listName) => (
+                      <option key={listName}>{listName}</option>
+                    ))}
+                  </select>
+                  <button type="submit" id="deleteListButton">Delete</button>
+                </form>
+                {/* favourite lists will be displayed here as buttons*/}
+                <ul id="favouriteLists">
+                  {favoriteLists.map((listName) => (
+                    <button key={listName}>
+                      {listName}
+                    </button>
+                  ))}
+                </ul>
+              </div>
+            </div>
 
-        {/* Add the "Favorite List Heroes" title section */}
-        <div id="favoriteListHeroesTitle">
-          <h2>Favorite List Heroes</h2>
-        </div>
-      </div>
-      <button id="sortByName" onClick={()=>{sortResults('name')}}>Sort by Name</button>
-      <button id="sortByRace" onClick={()=>{sortResults('race')}}>Sort by Race</button>
-      <button id="sortByPublisher" onClick={()=>{sortResults('publisher')}}>Sort by Publisher</button>
-      <button id="sortByPower" onClick={()=>{sortResults('power')}}>Sort by Power</button>
+            {/* Display Superheroes in a List */}
+            <div id="listDetails">
+              {/* Modify the "Sort List" title section */}
+              <div id="sortListTitle">
+                <h2>Sort List: <span id="listName"></span></h2>
+                <form id="listsForm">
+                  <label htmlFor="listNames">Add Selected Heroes to:</label>
+                  <select id="listNames">
+                    {favoriteLists.map((listName) => (
+                      <option key={listName}>{listName}</option>
+                    ))}
+                  </select>
+                  <button type="submit" id="listAddButton">Add</button>
+                </form>
+              </div>
 
-      {/* Display Search Results */}
-      <div id="searchAndListsContainer">
-        {/* Search Results */}
-        <div id="searchResults">
-          {errorMessage && <p>{errorMessage}</p>}
-          {displaySearch()}
-          {/* Results will be displayed here */}
-        </div>
-        {/* Added Lists Results */}
-        <div id="addedListsResults">
-          <ul>Your Heroes will be displayed here...</ul>
-          {/* Results for added lists will be displayed here */}
-        </div>
-      </div>
-      <label htmlFor="FAQ">FAQ: What Publishers are available</label>
-      <button id="FAQ" onClick={()=>{displayPublishers()}}>Available Publishers</button>
-      <script src="script.js"></script>
-    </div>
+              {/* Add the "Favorite List Heroes" title section */}
+              <div id="favoriteListHeroesTitle">
+                <h2>Favorite List Heroes</h2>
+              </div>
+            </div>
+            <button id="sortByName" onClick={()=>{sortResults('name')}}>Sort by Name</button>
+            <button id="sortByRace" onClick={()=>{sortResults('race')}}>Sort by Race</button>
+            <button id="sortByPublisher" onClick={()=>{sortResults('publisher')}}>Sort by Publisher</button>
+            <button id="sortByPower" onClick={()=>{sortResults('power')}}>Sort by Power</button>
+
+            {/* Display Search Results */}
+            <div id="searchAndListsContainer">
+              {/* Search Results */}
+              <div id="searchResults">
+                {errorMessage && <p>{errorMessage}</p>}
+                {displaySearch()}
+                {/* Results will be displayed here */}
+              </div>
+              {/* Added Lists Results */}
+              <div id="addedListsResults">
+                <ul>Your Heroes will be displayed here...</ul>
+                {/* Results for added lists will be displayed here */}
+              </div>
+            </div>
+            <label htmlFor="FAQ">FAQ: What Publishers are available</label>
+            <button id="FAQ" onClick={()=>{displayPublishers()}}>Available Publishers</button>
+            <script src="script.js"></script>
+          </div>
+          } />
+        </Routes>
+    </Router>
   );
 }
 

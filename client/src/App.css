@@ -136,3 +136,26 @@ button {
 #signUpButton {
   margin-top: 10px;
 }
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.nav-button {
+  text-decoration: none;
+  padding: 10px 20px;
+  border: 1px solid #007acc;
+  border-radius: 5px;
+  color: #007acc;
+  background-color: #ffffff;
+  transition: background-color 0.3s ease;
+
+  /* Optional hover effect */
+  &:hover {
+    background-color: #007acc;
+    color: #ffffff;
+  }
+}
