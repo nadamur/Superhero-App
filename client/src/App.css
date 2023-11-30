@@ -1,19 +1,5 @@
 /* App.css */
 
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-}
-
-#title {
-  background-color: #007acc;
-  color: #fff;
-  padding: 10px;
-  border-radius: 5px;
-  text-align: center;
-}
-
 #header {
   display: flex;
   justify-content: space-between;
@@ -21,86 +7,12 @@ body {
   padding: 10px;
 }
 
-#searchContainer,
-#favouriteListsContainer {
-  flex: 1;
-  padding: 10px;
-}
 
-#searchContainer {
-  background-color: #f0f0f0;
-  padding: 10px;
-}
-
-#favouriteListsContainer {
-  background-color: #f0f0f0;
-  padding: 10px;
-  text-align: right;
-}
-
-#content {
-  padding: 20px;
-}
 
 #searchForm {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-}
-
-#searchCategory,
-#searchInput,
-#searchButton {
-  margin: 5px;
-}
-
-.large-square-button {
-  width: 150px;
-  height: 150px;
-  font-size: 16px;
-  padding: 10px;
-}
-
-h2 {
-  background-color: #007acc;
-  color: #fff;
-  padding: 10px;
-  border-radius: 5px;
-}
-
-button {
-  background-color: #007acc;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  margin: 5px;
-  cursor: pointer;
-  border-radius: 10px; /* Adjust the value to make it more or less rounded */
-}
-
-#searchResults ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-#searchResults ul li {
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  padding: 10px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-#searchResults ul li.selected {
-  background-color: lightblue;
-}
-
-#searchAndListsContainer {
-  display: flex;
-}
-
-select {
-  margin-right: 8px;
 }
 
 #searchResults,
@@ -112,22 +24,40 @@ select {
   border: 1px solid #ccc;
   border-radius: 5px;
 }
-
-#listDetails {
-  margin-top: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+ul{
+  margin-bottom: 8px;
+  margin-right: 8px;
+  margin-left: 8px;
+  color: #333;
 }
 
-#sortListTitle {
-  flex: 1;
-  margin-right: 10px;
+h2 {
+  background-color: #007acc;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
 }
 
-#favoriteListHeroesTitle {
-  flex: 1;
-  margin-left: 10px;
+#searchResults ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+#searchResults ul li {
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  background-color: f0f0f0;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#searchResults ul li.selected {
+  background-color: lightblue;
+}
+
+select {
+  margin-right: 8px;
 }
 
 #signup {
@@ -278,6 +208,7 @@ input {
 }
 
 button {
+  margin: 5px;
   background-color: #007acc; /* Bootstrap's info color */
   color: white;
   padding: 10px 15px;
@@ -343,3 +274,49 @@ button:hover {
 .select-option:hover {
   background-color: #f0f0f0;
 }
+
+#container {
+  display: flex;
+  flex-direction: column; /* Display children in a column layout */
+}
+
+#topSection {
+  display: flex;
+  justify-content: space-between;
+}
+
+#searchSuperheroes{
+  width: 50%; /* Adjust as needed */
+  padding: 10px;
+  box-sizing: border-box; /* To include padding in the width calculation */
+}
+#favoriteLists {
+  width: 50%; /* Adjust as needed */
+  padding: 10px;
+  box-sizing: border-box; /* To include padding in the width calculation */
+  text-align: right;
+}
+/* App.css */
+
+/* ... (your existing styles) */
+
+#bottomSection {
+  display: flex;
+  justify-content: space-between;
+}
+
+#sortList{
+  width: 50%; /* Adjust as needed */
+  padding: 10px;
+  box-sizing: border-box; /* To include padding in the width calculation */
+}
+#favoriteHeroes {
+  width: 50%; /* Adjust as needed */
+  padding: 10px;
+  box-sizing: border-box; /* To include padding in the width calculation */
+  text-align: right;
+}
+#footer{
+  text-align: center;
+}
+/* ... (your existing styles) */
