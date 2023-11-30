@@ -6,6 +6,14 @@ body {
   padding: 0;
 }
 
+#title {
+  background-color: #007acc;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+}
+
 #header {
   display: flex;
   justify-content: space-between;
@@ -158,4 +166,39 @@ button {
     background-color: #007acc;
     color: #ffffff;
   }
+}
+.signUpContainer {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.signUpContainer #title {
+  width: 100%; /* Make the title extend throughout the page */
+}
+
+.signUpContainer label {
+  display: block;
+  margin: 10px 0;
+}
+
+.signUpContainer input {
+  max-width: 300px; /* Adjust the width as needed */
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.signUpContainer button {
+  background-color: #007acc;
+  color: #fff;
+  border: none;
+  padding: 15px 30px;
+  margin-top: 10px;
+  cursor: pointer;
+  border-radius: 10px;
+}
+.signUpContainer p{
+  color: red;
 }

@@ -1,7 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const app = express();
-const port = 8080;
+const port = 5000;
 const path = require('path');
 const mongoose = require('mongoose');
 const fs = require('fs');
@@ -13,13 +13,14 @@ const userRoutes = require('./authentication.js');
 const cookieParser = require('cookie-parser');
 app.use(express.static(mainDir));
 app.use(express.static(clientDir));
+app.use(express.json());
 app.use(userRoutes);
 app.use(cookieParser());
 
 // database connection
 const dbURI = 'mongodb+srv://nadamurad2003:AUeHvPkfedepWhBQ@cluster0.8dcttlz.mongodb.net/node-auth';
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex:true })
-  .then((result) => app.listen(3000))
+  .then((result) => app.listen(8080))
   .catch((err) => console.log(err));
 
 //required functions
@@ -176,7 +177,6 @@ app.get('/api/search/:pattern/:field/:n', (req, res) => {
 
 //this method will create a list with a list name and returns an error if the name already exists
 app.post('/api/lists/:listName', (req, res) => {
-    console.log("here");
     const listName = req.params.listName;
     const filePath = '../superhero_lists.json';
     fs.readFile(filePath, 'utf-8', (err, data) => {

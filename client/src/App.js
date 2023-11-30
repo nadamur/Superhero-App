@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link, Navigate } from 'react-router-dom';
 import './App.css'; // Import your CSS file
-import Login from './LogIn.js';
+import LogIn from './LogIn.js';
 import SignUp from './SignUp.js';
 
 
@@ -203,7 +203,7 @@ function App() {
     <>
     <Router>
         <Routes>
-          <Route path="/login" element ={<Login />}/>
+          <Route path="/login" element ={<LogIn />}/>
           <Route path="/signup" element ={<SignUp />}/>
           <Route path="/" element ={
           <div>
@@ -288,7 +288,7 @@ function App() {
             <div id="searchAndListsContainer">
               {/* Search Results */}
               <div id="searchResults">
-                {errorMessage && <p>{errorMessage}</p>}
+                <p>{errorMessage}</p>
                 {displaySearch()}
                 {/* Results will be displayed here */}
               </div>
