@@ -21,9 +21,13 @@ function LogIn() {
       if (data.errors) {
         if (data.errors.email){
           setEmailError(data.errors.email);
+        }else{
+          setEmailError('')
         }
         if (data.errors.password){
           setPasswordError(data.errors.password);
+        }else{
+          setPasswordError('');
         }
       }else{
         alert('Successfully Logged In!');
