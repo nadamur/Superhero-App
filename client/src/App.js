@@ -24,13 +24,17 @@ function App() {
   const selectedItemsRef = useRef([]);
   //fav lists
   const [favoriteLists, setFavoriteLists] = useState([]);
-  const [listNameToDelete, setListNameToDelete] = useState([]);
+  const [listNameToDelete, setListNameToDelete] = useState(favoriteLists.length > 0 ? favoriteLists[0] : '');
   const [listNameToAdd, setListNameToAdd] = useState(favoriteLists.length > 0 ? favoriteLists[0] : '');
 
   useEffect(() => {
-    setListNameToAdd(favoriteLists.length > 0 ? favoriteLists[0] : '');
+    //sets favorite lists from back end
     getFavLists();
+    //displays search results
     displaySearch();
+    //sets up initial values
+    setListNameToAdd(favoriteLists.length > 0 ? favoriteLists[0] : '');
+    setListNameToDelete(favoriteLists.length > 0 ? favoriteLists[0] : '');
     console.log(selectedResults);
   }, [searchResults, listNameToAdd, favoriteLists,selectedResults]);
 
@@ -58,6 +62,27 @@ function App() {
     } catch (error) {
       console.error('Error:', error);
     }
+  }
+
+  //function to delete a list
+  const deleteList= async () =>{
+    console.log('delete');
+    console.log('list name' + listNameToDelete);
+    const url = `/api/lists/delete/${listNameToDelete}`;
+    try{
+    const response = await fetch(url, {
+      method: 'PUT',
+    });
+    if (response.status === 200) {
+      console.log('List created successfully');
+    } else if (response.status === 404) {
+      console.log('List name does not exist');
+    } else {
+      console.error('Error:', response.status);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
   }
 
   //function to add a result to 'selectedResults' list once it has been selected
@@ -95,6 +120,12 @@ function App() {
   const listAddNameChange= (event) =>{
     const selectedList = event.target.value;
     setListNameToAdd(selectedList);
+  }
+
+  //changes listNameToDelete variable to the currently selected list
+  const listDeleteNameChange= (event) =>{
+    const selectedList = event.target.value;
+    setListNameToDelete(selectedList);
   }
 
 
@@ -330,12 +361,12 @@ function App() {
                     <button id="addListButton">Add List</button>
                     <form id="deleteForm">
                       <label htmlFor="listNamesToDelete">Delete List:</label>
-                      <select id="listNamesToDelete" className="select-styled">
+                      <select id="listNamesToDelete" onChange={listDeleteNameChange} className="select-styled">
                         {favoriteLists.map((listName) => (
                           <option key={listName}>{listName} </option>
                         ))}
                       </select>
-                      <button type="submit" id="deleteListButton">
+                      <button type="submit" id="deleteListButton" onClick={deleteList}>
                         Delete
                       </button>
                     </form>
@@ -353,7 +384,7 @@ function App() {
                     <form id="listsForm">
                       <label htmlFor="listNames">Add Selected Heroes to:</label>
                       <div className="select-container">
-                        <select id="listNames" onChange={listAddNameChange} value={listNameToAdd} className="select-styled">
+                        <select id="listNames" onChange={listAddNameChange} className="select-styled">
                           {favoriteLists.map((listName) => (
                             <option key={listName}>{listName}</option>
                           ))}
