@@ -13,6 +13,7 @@ function App() {
   const [searchResultIds, setSearchResultIds] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [errorMessage, setErrorMessage] = useState('Your Search Results will be displayed here...');
+  //temporary array to hold search results
   const listItems = [];
   //sorting lists
   const [sortedSearchResults, setSortedSearchResults] = useState([]);
@@ -20,18 +21,58 @@ function App() {
   const [selectedResults, setSelectedResults] = useState([]);
   //fav lists
   const [favoriteLists, setFavoriteLists] = useState([]);
-  const [listNamesToDelete, setListNamesToDelete] = useState([]);
-  // Add more state variables as needed
+  const [listNameToDelete, setListNameToDelete] = useState([]);
+  const [listNameToAdd, setListNameToAdd] = useState(favoriteLists.length > 0 ? favoriteLists[0] : '');
 
   useEffect(() => {
+    setListNameToAdd(favoriteLists.length > 0 ? favoriteLists[0] : '');
     getFavLists();
     displaySearch();
-    console.log('use');
-    // Fetch initial data or perform any necessary setup
-    // Similar to componentDidMount in class components
-    // displayFavoriteListsButtons();
-    // Example: deleteLists();
-  }, [searchResults]);
+  }, [searchResults, listNameToAdd, favoriteLists]);
+
+  //function to add selected items to a fav list
+  const addSelectedHeroesToList= async () =>{
+    console.log('r:' + selectedResults);
+    console.log('l:' + listNameToAdd)
+    const url = `/api/lists/add/${listNameToAdd}?ids=${selectedResults}`;
+    try{
+      const response = await fetch(url, {
+        method: 'PUT',
+      });
+      if (response.status === 200) {
+        console.log('List created successfully');
+      } else if (response.status === 404) {
+        console.log('List name already exists');
+      } else {
+        console.error('Error:', response.status);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  //function to add a result to 'selectedResults' list once it has been selected
+  const selectResults= (event) =>{
+    const listItem = event?.target?.closest("li");
+    if(listItem){
+      const id = listItem.id;
+      setSelectedResults((prevSelectedResults) =>{
+        if (prevSelectedResults.includes(id)){
+          listItem.classList.remove("selected");
+          return prevSelectedResults.filter((itemId) => itemId !== id);
+        }
+        else{
+          listItem.classList.add("selected");
+          return [...prevSelectedResults, id];
+        }
+      });
+    }
+  }
+  const listAddNameChange= (event) =>{
+    const selectedList = event.target.value;
+    setListNameToAdd(selectedList);
+  }
+
 
   //function to return fav list names
   const getFavLists = async () => {
@@ -42,12 +83,30 @@ function App() {
         throw new Error('Request failed');
       }
       const data = await res.json();
-      //set list names as 'favoriteLists' array
-      setFavoriteLists(data.listNames);
+
+      // compare the new list with the current list
+      if (!arraysAreEqual(data.listNames, favoriteLists)) {
+        // set list names as 'favoriteLists' array only if there are changes
+        setFavoriteLists(data.listNames);
+      }
     } catch (error) {
       console.error('Error fetching favorite lists:', error);
     }
-   };
+  };
+  // helper function to compare two arrays -- to stop 'favoriteLists' from being updated in a loop
+  const arraysAreEqual = (array1, array2) => {
+    if (array1.length !== array2.length) {
+      return false;
+    }
+
+    for (let i = 0; i < array1.length; i++) {
+      if (array1[i] !== array2[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  };
 
    //function to return publisher names
   const displayPublishers = async () => {
@@ -100,6 +159,7 @@ function App() {
   //function to retrieve ids of heroes that match search
   const searchSuperheroes = async (criteria) => {
     try {
+      setSearchResults([]);
       const response = await fetch(`/api/search/${pattern}/${field}/5`);
       if (!response.ok) {
         //if no heroes found, displays message
@@ -109,8 +169,9 @@ function App() {
       }else{
         const data = await response.json();
         setSearchResultIds(data.ids);
+        setErrorMessage('Loading...');
+        await displayHeroes(data);
         setErrorMessage('');
-        displayHeroes(data);
         
       }
     } catch (error) {
@@ -121,10 +182,6 @@ function App() {
   //displays search results
   const displaySearch = () =>{
     if(searchResults){
-      // console.log('unsorted:')
-      // searchResults.forEach((hero)=>{
-      //   console.log(hero.props.race);
-      // })
       return (
         <ul>
           {searchResults.map((item, index) => React.cloneElement(item, { key: index }))}
@@ -144,19 +201,21 @@ function App() {
         .map(([key, value]) => (
           <span key={key} style={{ fontSize: '14px' }}>{`${key}: ${value}, `}</span>
         ));
-      
+  
       let listItem = (
         <li key={i} id={i} name={hero.name} race={hero.Race} publisher={hero.Publisher}>
           <strong style={{ color: '#007acc' }}>{hero.name} </strong>
           <br />
           <span style={{ fontSize: '14px' }}>
-            Powers: {powers === 'No Powers' ? 'None' : powers.powers.length > 1 ? powers.powers.join(', ') : powers.powers}
+            Powers: {Array.isArray(powers.powers) && powers.powers.length > 0
+              ? powers.powers.join(', ')
+              : 'None'}
           </span>
           {heroAttributes}
         </li>
       );
-      if(powers != 'No Powers'){
-        listItem = React.cloneElement(listItem, {power: powers.powers});
+      if (powers !== 'No Powers') {
+        listItem = React.cloneElement(listItem, { power: powers.powers });
       }
       listItems.push(listItem);
     }
@@ -265,12 +324,12 @@ function App() {
                 <h2>Sort List: <span id="listName"></span></h2>
                 <form id="listsForm">
                   <label htmlFor="listNames">Add Selected Heroes to:</label>
-                  <select id="listNames">
+                  <select id="listNames" onChange={listAddNameChange} value={listNameToAdd} >
                     {favoriteLists.map((listName) => (
                       <option key={listName}>{listName}</option>
                     ))}
                   </select>
-                  <button type="submit" id="listAddButton">Add</button>
+                  <button type="submit" id="listAddButton" onClick={addSelectedHeroesToList}>Add</button>
                 </form>
               </div>
 
@@ -287,7 +346,7 @@ function App() {
             {/* Display Search Results */}
             <div id="searchAndListsContainer">
               {/* Search Results */}
-              <div id="searchResults">
+              <div id="searchResults" onClick={selectResults}>
                 <p>{errorMessage}</p>
                 {displaySearch()}
                 {/* Results will be displayed here */}

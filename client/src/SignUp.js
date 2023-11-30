@@ -62,7 +62,6 @@ function SignUp() {
               onChange={(event) => setUsername(event.target.value)}
               placeholder="..."
             />
-            <br></br>
             <label htmlFor="emailInput">Enter email: </label>
             <input
               type="text"

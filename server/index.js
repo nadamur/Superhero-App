@@ -234,37 +234,44 @@ app.post('/api/lists/:listName', (req, res) => {
 //save list of superhero IDs to a given list name
 app.put('/api/lists/add/:listNameAndIds', (req, res) => {
     const listName = req.params.listNameAndIds;
-    //assuming we are receiving the URL in the format: /api/lists/myList?ids=1,2,3
+    // assuming we are receiving the URL in the format: /api/lists/myList?ids=1,2,3
     const ids = req.query.ids;
-    idArray = ids.split(',');
+    const idArray = ids.split(',');
     const filePath = '../superhero_lists.json';
     fs.readFile(filePath, 'utf-8', (err, data) => {
         if (err) {
-          console.error('Error reading JSON file:', err);
-          res.status(500).json({ error: 'Internal server error' });
-          return;
+            console.error('Error reading JSON file:', err);
+            res.status(500).json({ error: 'Internal server error' });
+            return;
         }
         const jsonData = JSON.parse(data);
-        //if the name does exist, update the IDs
-        if (jsonData.hasOwnProperty(listName)){
-            jsonData[listName] = idArray;
-            const jsonString = JSON.stringify(jsonData, null, 2);
-            fs.writeFile(filePath, jsonString, 'utf-8', (writeErr) => {
-            if (writeErr) {
-                console.error('Error writing JSON file:', writeErr);
-                res.status(500).json({ error: 'Internal server error' });
-                return;
-            } else {
-                res.sendStatus(200);
-                return;
+        // check if the listName exists
+        if (jsonData.hasOwnProperty(listName)) {
+            const existingIds = new Set(jsonData[listName]);
+            // add unique IDs to the existing list using a set so no repeated ids
+            for (const id of idArray) {
+                existingIds.add(id);
             }
+            // convert the Set back to an array
+            jsonData[listName] = [...existingIds];
+            const jsonString = JSON.stringify(jsonData, null, 2);
+            //write new array to file
+            fs.writeFile(filePath, jsonString, 'utf-8', (writeErr) => {
+                if (writeErr) {
+                    console.error('Error writing JSON file:', writeErr);
+                    res.status(500).json({ error: 'Internal server error' });
+                    return;
+                } else {
+                    res.sendStatus(200);
+                    return;
+                }
             });
-        }else{
-            //if it doesnt exist, send an error
+        } else {
+            // if it doesn't exist, send an error
             res.status(404).json({ error: 'List name does not exist' });
             return;
-        }        
-      });
+        }
+    });
 });
 
 //get list of superhero IDs for given list name

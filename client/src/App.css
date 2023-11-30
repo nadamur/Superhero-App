@@ -99,6 +99,10 @@ button {
   display: flex;
 }
 
+select {
+  margin-right: 8px;
+}
+
 #searchResults,
 #addedListsResults {
   flex: 1;
@@ -158,13 +162,13 @@ button {
   border: 1px solid #007acc;
   border-radius: 5px;
   color: #007acc;
-  background-color: #ffffff;
+  background-color: #007acc;
   transition: background-color 0.3s ease;
 
   /* Optional hover effect */
   &:hover {
-    background-color: #007acc;
-    color: #ffffff;
+    background-color: #ffffff;
+    color: #007acc;
   }
 }
 .signUpContainer {
@@ -212,7 +216,8 @@ body {
 }
 
 nav {
-  background-color: #333;
+  margin-top: 10px;
+  background-color: #f4f4f4;
   color: white;
   padding: 10px;
 }
@@ -251,8 +256,9 @@ nav {
 }
 
 label {
-  display: block;
   margin-bottom: 8px;
+  margin-right: 8px;
+  margin-left: 8px;
   color: #333;
 }
 
@@ -265,14 +271,14 @@ input {
   box-sizing: border-box;
 }
 
-p {
+.signUpContainer p {
   color: #d9534f; /* Bootstrap's danger color */
   margin-top: -8px;
   margin-bottom: 16px;
 }
 
 button {
-  background-color: #5bc0de; /* Bootstrap's info color */
+  background-color: #007acc; /* Bootstrap's info color */
   color: white;
   padding: 10px 15px;
   border: none;
@@ -285,3 +291,55 @@ button:hover {
   background-color: #46b8da; /* Lighter shade on hover */
 }
 
+/* Style the select container */
+.select-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* Style the select itself */
+.select-styled {
+  display: inline-block;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Hide the default arrow on the select */
+.select-styled:after {
+  content: '\25BC'; /* Unicode character for a down arrow */
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+}
+
+/* Style the dropdown menu */
+.select-options {
+  display: none;
+  position: absolute;
+  border: 1px solid #ccc;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+/* Show the dropdown when the select is focused */
+.select-styled:focus + .select-options {
+  display: block;
+}
+
+/* Style the options in the dropdown */
+.select-option {
+  padding: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* Highlight the selected option */
+.select-option:hover {
+  background-color: #f0f0f0;
+}
