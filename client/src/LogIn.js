@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from './authContext';
 
-function LogIn() {
+function LogIn({authenticationComplete}) {
   //authentication
   const {isAuthenticated, login} = useAuth();
   //user info
@@ -33,8 +33,10 @@ function LogIn() {
           setPasswordError('');
         }
       }else{
-        alert('Successfully Logged In!');
+        authenticationComplete();
+        //alert('Successfully Logged In!');
         login();
+        navigate('/loggedin');
       }
     }
     catch (err) {
@@ -45,9 +47,6 @@ function LogIn() {
   //this will run when the authentication goes through
   useEffect(() => {
     console.log('authenticated login: ' + isAuthenticated);
-    if (isAuthenticated) {
-      navigate('/loggedin');
-    }
   }, [isAuthenticated]);
   
   return (
@@ -79,7 +78,7 @@ function LogIn() {
               placeholder="..."
             />
             <p>{passwordError}</p>
-            <button onClick={()=>{logIn()}}>Submit</button>
+            <button onClick={logIn}>Submit</button>
             </div>
     </div>
   );

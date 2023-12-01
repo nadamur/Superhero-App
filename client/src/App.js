@@ -14,11 +14,11 @@ function App() {
   useEffect(() => {
     //check authentication
     checkAuthentication();
-    console.log('authenticated: ' + isAuthenticated);
-  }, [isAuthenticated]);
+  }, []);
 
-  const checkLogInStatus = () =>{
-    checkAuthentication();
+  //if LogIn page notifies us that login was successful, change 'isAuthenticated' to true immediately to allow access to main page
+  const loggedIn = () =>{
+    login();
   }
 
   //function to check authentication
@@ -28,7 +28,6 @@ function App() {
       const response = await fetch('/api/check-auth');
       if (response.ok) {
         login();
-        console.log('authenticated: ' + isAuthenticated);
       } else {
         logout();
       }
@@ -36,14 +35,13 @@ function App() {
       console.error('Error checking authentication:', error);
       logout();
     }
-    
   };
 
   return (
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/login" element={<LogIn />} />
+          <Route path="/login" element={<LogIn on authenticationComplete={loggedIn}/>} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/loggedin" element={isAuthenticated ? <LoggedInUser /> : <Navigate to="/signup"/>} />
           
@@ -62,9 +60,6 @@ function App() {
                     </li>
                     <li>
                       <Link to="/loggedin" className="nav-button">Logged In</Link>
-                    </li>
-                    <li>
-                      <button onClick={checkLogInStatus}>Status</button>
                     </li>
                   </ul>
                 </nav>
