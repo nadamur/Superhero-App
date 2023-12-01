@@ -1,8 +1,11 @@
 // Login.js
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from './authContext';
 
 function LogIn() {
+  //authentication
+  const {isAuthenticated, login} = useAuth();
   //user info
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -32,7 +35,6 @@ function LogIn() {
       }else{
         alert('Successfully Logged In!');
         login();
-        navigate('/loggedin');
       }
     }
     catch (err) {
@@ -40,10 +42,13 @@ function LogIn() {
     }
   }
 
-  // useEffect(() => {
-  //   console.log('email: ' + email);
-  //   console.log('pass: ' + password);
-  // }, [email,password]);
+  //this will run when the authentication goes through
+  useEffect(() => {
+    console.log('authenticated login: ' + isAuthenticated);
+    if (isAuthenticated) {
+      navigate('/loggedin');
+    }
+  }, [isAuthenticated]);
   
   return (
     <div>

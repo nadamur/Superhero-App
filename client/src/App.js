@@ -17,6 +17,9 @@ function App() {
     console.log('authenticated: ' + isAuthenticated);
   }, [isAuthenticated]);
 
+  const checkLogInStatus = () =>{
+    checkAuthentication();
+  }
 
   //function to check authentication
   const checkAuthentication = async () => {
@@ -24,16 +27,16 @@ function App() {
       // Make a request to your backend to check authentication
       const response = await fetch('/api/check-auth');
       if (response.ok) {
-        console.log('response ok');
         login();
+        console.log('authenticated: ' + isAuthenticated);
       } else {
-        console.log('response not ok');
         logout();
       }
     } catch (error) {
       console.error('Error checking authentication:', error);
       logout();
     }
+    
   };
 
   return (
@@ -42,7 +45,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<LogIn />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/loggedin" element={isAuthenticated ? <LoggedInUser /> : <Navigate to="/login"/>} />
+          <Route path="/loggedin" element={isAuthenticated ? <LoggedInUser /> : <Navigate to="/signup"/>} />
           
           <Route
             path="/"
@@ -59,6 +62,9 @@ function App() {
                     </li>
                     <li>
                       <Link to="/loggedin" className="nav-button">Logged In</Link>
+                    </li>
+                    <li>
+                      <button onClick={checkLogInStatus}>Status</button>
                     </li>
                   </ul>
                 </nav>
