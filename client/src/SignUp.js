@@ -1,8 +1,11 @@
 // Login.js
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from './authContext';
 
-function SignUp() {
+function SignUp({authenticationComplete}) {
+  //authentication
+  const {isAuthenticated, login} = useAuth();
   //user info
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -12,7 +15,6 @@ function SignUp() {
   const [passwordError, setPasswordError] = useState('');
   const navigate = useNavigate();
   const signUp = async ()=>{
-    console.log("signing up...");
     try {
       const res = await fetch('/signup', { 
         method: 'POST', 
@@ -28,6 +30,8 @@ function SignUp() {
           setPasswordError(data.errors.password);
         }
       }else{
+        authenticationComplete();
+        login();
         alert('Account created successfully!');
         navigate('/loggedin');
       }
@@ -36,12 +40,6 @@ function SignUp() {
       console.log(err);
     }
   }
-
-  // useEffect(() => {
-  //   console.log('user: ' + username);
-  //   console.log('email: ' + email);
-  //   console.log('pass: ' + password);
-  // }, [username,email,password]);
   
   return (
     <div>

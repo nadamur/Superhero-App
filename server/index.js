@@ -154,7 +154,6 @@ app.get('/api/search/:pattern/:field/:n', (req, res) => {
                 }
                 return null;
             });
-            console.log("heroes: " + heroes);
             const names = heroes.map((hero) => hero.hero_names);
             ids = [];
             for (const n of names){
@@ -187,9 +186,6 @@ app.post('/api/lists/:listName', (req, res) => {
         //if there is data in the json file
         if (data){
             const jsonData = JSON.parse(data);
-            console.log('Parsed JSON Data:', jsonData);
-            console.log('listName:', listName);
-            console.log('Keys in jsonData:', Object.keys(jsonData));
             jsonKeys = Object.keys(jsonData);
             for (key of jsonKeys){
                 if (key === listName){
@@ -197,7 +193,6 @@ app.post('/api/lists/:listName', (req, res) => {
                     return;
                 }
             }
-            console.log("writing");
             const newListName = listName;
             const newSuperheroIds = [];
             jsonData[newListName] = newSuperheroIds;

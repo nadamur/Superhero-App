@@ -357,7 +357,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/login" element={<LogIn on authenticationComplete={loggedIn}/>} />
-          <Route path="/signup" element={<SignUp />} />
+          <Route path="/signup" element={<SignUp on authenticationComplete={loggedIn}/>} />
           <Route path="/loggedin" element={isAuthenticated ? <LoggedInUser /> : <Navigate to="/signup"/>} />
           
           <Route

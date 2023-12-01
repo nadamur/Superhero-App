@@ -8,7 +8,6 @@ router.use(cookieParser());
 //functions
 //handle errors
 const handleErrors = (err) => {
-    console.log(err.message, err.code);
     let errors = { username: '', email: '', password: '' };
     // incorrect email
     if (err.message === 'incorrect email') {
@@ -81,7 +80,6 @@ const requireAuth = (req, res, next) => {
         console.log(err.message);
         return res.status(401).json({ isAuthenticated: false }); // Token is not verified
       } else {
-        console.log('decoded token: ' + decodedToken);
         next(); // Token is verified, proceed to the next middleware
       }
     });
