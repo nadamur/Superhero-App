@@ -71,6 +71,7 @@ router.post('/login', async (req,res) =>{
 
 //middleware
 const requireAuth = (req,res,next) =>{
+  console.log('cookies: ' + req.cookies);
   const token = req.cookies.jwt;
   //check token exists and is verified
   if(token){

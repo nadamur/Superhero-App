@@ -26,13 +26,8 @@ function LoggedInUser() {
   const [favoriteLists, setFavoriteLists] = useState([]);
   const [listNameToDelete, setListNameToDelete] = useState(favoriteLists.length > 0 ? favoriteLists[0] : '');
   const [listNameToAdd, setListNameToAdd] = useState(favoriteLists.length > 0 ? favoriteLists[0] : '');
-  //authentication, defaults to false
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    //check authentication
-    checkAuthentication();
-    console.log(isAuthenticated);
     //sets favorite lists from back end
     getFavLists();
     //displays search results
@@ -40,25 +35,24 @@ function LoggedInUser() {
     //sets up initial values
     setListNameToAdd(favoriteLists.length > 0 ? favoriteLists[0] : '');
     setListNameToDelete(favoriteLists.length > 0 ? favoriteLists[0] : '');
-    console.log(selectedResults);
   }, [searchResults, listNameToAdd, favoriteLists,selectedResults]);
 
 
   //function to check authentication
-  const checkAuthentication = async () => {
-    try {
-      // Make a request to your backend to check authentication
-      const response = await fetch('/api/check-auth');
-      if (response.ok) {
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-      }
-    } catch (error) {
-      console.error('Error checking authentication:', error);
-      setIsAuthenticated(false);
-    }
-  };
+//   const checkAuthentication = async () => {
+//     try {
+//       // Make a request to your backend to check authentication
+//       const response = await fetch('/api/check-auth');
+//       if (response.ok) {
+//         setIsAuthenticated(true);
+//       } else {
+//         setIsAuthenticated(false);
+//       }
+//     } catch (error) {
+//       console.error('Error checking authentication:', error);
+//       setIsAuthenticated(false);
+//     }
+//   };
 
   //function to add selected items to a fav list
   const addSelectedHeroesToList= async (event) =>{
@@ -88,8 +82,6 @@ function LoggedInUser() {
 
   //function to delete a list
   const deleteList= async () =>{
-    console.log('delete');
-    console.log('list name' + listNameToDelete);
     const url = `/api/lists/delete/${listNameToDelete}`;
     try{
       const response = await fetch(url, {

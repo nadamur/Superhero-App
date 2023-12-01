@@ -33,7 +33,7 @@ function App() {
   useEffect(() => {
     //check authentication
     checkAuthentication();
-    console.log(isAuthenticated);
+    console.log('authenticated: ' + isAuthenticated);
     //sets favorite lists from back end
     getFavLists();
     //displays search results
@@ -41,7 +41,6 @@ function App() {
     //sets up initial values
     setListNameToAdd(favoriteLists.length > 0 ? favoriteLists[0] : '');
     setListNameToDelete(favoriteLists.length > 0 ? favoriteLists[0] : '');
-    console.log(selectedResults);
   }, [searchResults, listNameToAdd, favoriteLists,selectedResults]);
 
 
@@ -89,8 +88,6 @@ function App() {
 
   //function to delete a list
   const deleteList= async () =>{
-    console.log('delete');
-    console.log('list name' + listNameToDelete);
     const url = `/api/lists/delete/${listNameToDelete}`;
     try{
       const response = await fetch(url, {
@@ -342,7 +339,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<LogIn />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/loggedin" element={<LoggedInUser />} />
+          <Route path="/loggedin" element={isAuthenticated ? <LoggedInUser /> : <Navigate to="/login"/>} />
           
           <Route
             path="/"
