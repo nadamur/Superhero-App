@@ -97,7 +97,7 @@ select {
 
   /* Optional hover effect */
   &:hover {
-    background-color: #ffffff;
+    background-color: white;
     color: #007acc;
   }
 }
@@ -219,7 +219,7 @@ button {
 }
 
 button:hover {
-  background-color: #46b8da; /* Lighter shade on hover */
+  background-color: rgb(139, 0, 139); /* Lighter shade on hover */
 }
 
 /* Style the select container */
@@ -296,6 +296,23 @@ button:hover {
   box-sizing: border-box; /* To include padding in the width calculation */
   text-align: right;
 }
+
+#AboutUs {
+  width: 50%; /* Adjust as needed */
+  padding: 10px;
+  box-sizing: border-box; /* To include padding in the width calculation */
+  text-align: right;
+}
+#AboutUs p {
+  text-align: left;
+  font-family: 'Your Cursive Font', cursive, 'fallback-cursive', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: rgb(139, 0, 139);
+  background-color: #f8f8f8;
+  padding: 5px;
+}
+
 /* App.css */
 
 /* ... (your existing styles) */
@@ -319,4 +336,12 @@ button:hover {
 #footer{
   text-align: center;
 }
-/* ... (your existing styles) */
+
+h1{
+  text-align: center;
+  font-size: 48px;
+  font-family: 'Your Fancy Font', cursive; /* Replace 'Your Fancy Font' with the desired font */
+  color: rgb(139, 0, 139); /* Set the desired text color */
+  margin-top: 0;
+  margin-bottom: 0;
+}

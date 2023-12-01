@@ -34,7 +34,6 @@ function LogIn({authenticationComplete}) {
         }
       }else{
         authenticationComplete();
-        //alert('Successfully Logged In!');
         login();
         navigate('/loggedin');
       }
