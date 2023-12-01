@@ -428,13 +428,6 @@ function App() {
                   </div>
                   </div>
               </div>
-
-
-              {/* Other sections go here */}
-              <div id="footer">
-                  <label htmlFor="FAQ">FAQ: What Publishers are available</label>
-                  <button id="FAQ" onClick={() => { displayPublishers() }}>Available Publishers</button>
-              </div>
                 <script src="script.js"></script>
               </div>
             }

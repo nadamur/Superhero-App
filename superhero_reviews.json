@@ -1,0 +1,12 @@
+[
+    {
+    "name":"listName",
+    "ratings":["1","2","3"],
+    "comments":["bad","good",""]
+    },
+    {
+    "name":"listName2",
+    "ratings":["2","2","2"],
+    "comments":["good","","bad"]
+    }
+]
