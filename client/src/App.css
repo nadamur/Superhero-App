@@ -353,12 +353,11 @@ h1{
   font-size: 20px; /* Adjust the size as needed */
 }
 .dropdownContent{
-  font-family: 'Your Cursive Font', cursive, 'fallback-cursive', sans-serif;
   color:white;
   margin-top: 0;
   text-align: center;
   border: 1px solid #ccc;
   background-color: rgb(194, 75, 194);
-  padding: 0px;
+  padding: 10px;
   transition: background-color 0.2s;
 }

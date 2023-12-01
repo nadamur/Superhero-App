@@ -119,13 +119,12 @@ function App() {
         ));
   
       let listItem = (
-        <li key={i} id={i} name={hero.name} race={hero.Race} publisher={hero.Publisher}>
+        <li key={i} id={i} name={hero.name} race={hero.Race} publisher={hero.Publisher} gender = {hero.Gender} eye = {hero['Eye color']} hair = {hero['Hair color']} height = {hero.Height} skin = {hero['Skin color']} alignment = {hero.Alignment} weight = {hero.Weight}>
           <strong style={{ color: '#007acc' }}>{hero.name} </strong>
           <br />
           <span style={{ fontSize: '14px' }}>
             Publisher: {hero.Publisher}
           </span>
-          
         </li>
       );
       if (powers !== 'No Powers') {
@@ -220,9 +219,17 @@ function App() {
               {/* Conditionally render the dropdown content based on the state */}
               {dropdownStates[index] && (
                 <div className="dropdownContent">
+                  <span>
+                  Gender: {item.props.gender}, 
+                  Eye colour: {item.props.eye}, 
+                  Race: {item.props.race}, 
+                  Hair colour: {item.props.hair}, 
+                  Height: {item.props.height}, 
+                  Skin colour: {item.props.skin}, 
+                  Alignment: {item.props.alignment}, 
+                  Weight: {item.props.weight}
+                  </span>
                   {/* Your dropdown content goes here */}
-                  <p>More info...</p>
-                  
                 </div>
               )}
             </div>
@@ -292,6 +299,10 @@ function App() {
                   <div id="sortList">
                   <h2>Heroes <span id="listName"></span></h2>
                   <div id="resultsContainer">
+                  <button id="sortByName" onClick={() => { sortResults('name') }}>Sort by Name</button>
+                  <button id="sortByRace" onClick={() => { sortResults('race') }}>Sort by Race</button>
+                  <button id="sortByPublisher" onClick={() => { sortResults('publisher') }}>Sort by Publisher</button>
+                  <button id="sortByPower" onClick={() => { sortResults('power') }}>Sort by Power</button>
                   {/* Display Search Results */}
                   <div id="searchResults">
                   <p>{errorMessage}</p>
