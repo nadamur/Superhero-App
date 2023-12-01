@@ -29,7 +29,7 @@ function SignUp() {
         }
       }else{
         alert('Account created successfully!');
-        navigate('/');
+        navigate('/loggedin');
       }
     }
     catch (err) {

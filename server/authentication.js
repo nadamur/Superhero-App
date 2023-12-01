@@ -65,8 +65,35 @@ router.post('/login', async (req,res) =>{
     const errors = handleErrors(err);
     res.status(400).json({ errors });
   }
-})
+});
 
+
+
+//middleware
+const requireAuth = (req,res,next) =>{
+  const token = req.cookies.jwt;
+  //check token exists and is verified
+  if(token){
+    jwt.verify(token, 'test secret', (err, decodedToken)=>{
+      if(err){
+        console.log(err.message);
+        res.status(401).json({ error: 'Unauthorized' });
+        res.redirect('/');
+      }else{
+        console.log('decoded token: ' + decodedToken);
+        next();
+      }
+    })
+  }else{
+    res.redirect('/');
+  }
+}
+
+//checks authentication status
+router.get('/api/check-auth', requireAuth, (req, res) => {
+  // If the middleware (requireAuth) is passed, the user is authenticated
+  res.json({ isAuthenticated: true });
+});
 
 
 module.exports = router;

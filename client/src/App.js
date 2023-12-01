@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Routes, Link, Navigate } from 'react-ro
 import './App.css'; // Import your CSS file
 import LogIn from './LogIn.js';
 import SignUp from './SignUp.js';
+import LoggedInUser from './LoggedInUser.js';
 
 
 function App() {
@@ -26,8 +27,13 @@ function App() {
   const [favoriteLists, setFavoriteLists] = useState([]);
   const [listNameToDelete, setListNameToDelete] = useState(favoriteLists.length > 0 ? favoriteLists[0] : '');
   const [listNameToAdd, setListNameToAdd] = useState(favoriteLists.length > 0 ? favoriteLists[0] : '');
+  //authentication, defaults to false
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    //check authentication
+    checkAuthentication();
+    console.log(isAuthenticated);
     //sets favorite lists from back end
     getFavLists();
     //displays search results
@@ -37,6 +43,23 @@ function App() {
     setListNameToDelete(favoriteLists.length > 0 ? favoriteLists[0] : '');
     console.log(selectedResults);
   }, [searchResults, listNameToAdd, favoriteLists,selectedResults]);
+
+
+  //function to check authentication
+  const checkAuthentication = async () => {
+    try {
+      // Make a request to your backend to check authentication
+      const response = await fetch('/api/check-auth');
+      if (response.ok) {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
+    } catch (error) {
+      console.error('Error checking authentication:', error);
+      setIsAuthenticated(false);
+    }
+  };
 
   //function to add selected items to a fav list
   const addSelectedHeroesToList= async (event) =>{
@@ -70,19 +93,24 @@ function App() {
     console.log('list name' + listNameToDelete);
     const url = `/api/lists/delete/${listNameToDelete}`;
     try{
-    const response = await fetch(url, {
-      method: 'PUT',
-    });
-    if (response.status === 200) {
-      console.log('List created successfully');
-    } else if (response.status === 404) {
-      console.log('List name does not exist');
-    } else {
-      console.error('Error:', response.status);
+      const response = await fetch(url, {
+        method: 'PUT',
+      });
+      if (response.status === 200) {
+        console.log('List created successfully');
+      } else if (response.status === 404) {
+        console.log('List name does not exist');
+      } else {
+        console.error('Error:', response.status);
+      }
+    } catch (error) {
+      console.error('Error:', error);
     }
-  } catch (error) {
-    console.error('Error:', error);
   }
+
+  //function to display heroes in a fav list
+  const displayFavHeroes= async () =>{
+    
   }
 
   //function to add a result to 'selectedResults' list once it has been selected
@@ -314,6 +342,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<LogIn />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/loggedin" element={<LoggedInUser />} />
           
           <Route
             path="/"
@@ -328,101 +357,11 @@ function App() {
                     <li>
                       <Link to="/signup" className="nav-button">Sign Up</Link>
                     </li>
+                    <li>
+                      <Link to="/loggedin" className="nav-button">Logged In</Link>
+                    </li>
                   </ul>
                 </nav>
-                <div id="topSection">
-                  {/* Top Left: Search Superheroes */}
-                  <div id="searchSuperheroes">
-                    <h2>Search Superheroes</h2>
-                    <form id="searchForm" onSubmit={handleSearch}>
-                      <label htmlFor="searchInput">Search by:</label>
-                      <select id="searchCategory">
-                        <option value="name">Name</option>
-                        <option value="race">Race</option>
-                        <option value="publisher">Publisher</option>
-                        <option value="power">Power</option>
-                      </select>
-                      <input
-                        type="text"
-                        id="searchInput"
-                        value={field}
-                        onChange={(e) => setField(e.target.value)}
-                        placeholder="Search . . ."
-                      />
-                      <button type="submit" id="searchButton">
-                        Search
-                      </button>
-                    </form>
-                  </div>
-
-                  {/* Top Right: Favorite Lists */}
-                  <div id="favoriteLists">
-                    <h2>Favourite Lists</h2>
-                    <button id="addListButton">Add List</button>
-                    <form id="deleteForm">
-                      <label htmlFor="listNamesToDelete">Delete List:</label>
-                      <select id="listNamesToDelete" onChange={listDeleteNameChange} className="select-styled">
-                        {favoriteLists.map((listName) => (
-                          <option key={listName}>{listName} </option>
-                        ))}
-                      </select>
-                      <button type="submit" id="deleteListButton" onClick={deleteList}>
-                        Delete
-                      </button>
-                    </form>
-                    <ul id="favouriteLists">
-                      {favoriteLists.map((listName) => (
-                        <button key={listName}>{listName}</button>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-                <div id="bottomSection">
-                {/* Bottom Left: Sort List */}
-                  <div id="sortList">
-                    <h2>Sort List: <span id="listName"></span></h2>
-                    <form id="listsForm">
-                      <label htmlFor="listNames">Add Selected Heroes to:</label>
-                      <div className="select-container">
-                        <select id="listNames" onChange={listAddNameChange} className="select-styled">
-                          {favoriteLists.map((listName) => (
-                            <option key={listName}>{listName}</option>
-                          ))}
-                        </select>
-                      </div>
-                      <button type="submit" id="listAddButton" onClick={addSelectedHeroesToList}>
-                        Add
-                      </button>
-                    </form>
-                    {/* Your existing buttons for sorting */}
-                  <button id="sortByName" onClick={() => { sortResults('name') }}>Sort by Name</button>
-                  <button id="sortByRace" onClick={() => { sortResults('race') }}>Sort by Race</button>
-                  <button id="sortByPublisher" onClick={() => { sortResults('publisher') }}>Sort by Publisher</button>
-                  <button id="sortByPower" onClick={() => { sortResults('power') }}>Sort by Power</button>
-                  <div id="resultsContainer">
-                  {/* Display Search Results */}
-                  <div id="searchResults" onClick={selectResults}>
-                    <p>{errorMessage}</p>
-                    {displaySearch()}
-                  </div>
-                  </div>
-                  </div>
-
-                  {/* Bottom Right: Favorite Heroes */}
-                  <div id="favoriteHeroes">
-                    <h2>Favorite Heroes</h2>
-                    <div id="addedListsResults">
-                      <ul>Your Heroes will be displayed here...</ul>
-                    </div>
-                  </div>
-                </div>
-
-
-                {/* Other sections go here */}
-                <div id="footer">
-                  <label htmlFor="FAQ">FAQ: What Publishers are available</label>
-                  <button id="FAQ" onClick={() => { displayPublishers() }}>Available Publishers</button>
-                </div>
                 <script src="script.js"></script>
               </div>
             }

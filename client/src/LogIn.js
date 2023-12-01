@@ -31,7 +31,7 @@ function LogIn() {
         }
       }else{
         alert('Successfully Logged In!');
-        navigate('/');
+        navigate('/loggedin');
       }
     }
     catch (err) {
