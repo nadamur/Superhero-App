@@ -31,6 +31,7 @@ function LogIn() {
         }
       }else{
         alert('Successfully Logged In!');
+        login();
         navigate('/loggedin');
       }
     }

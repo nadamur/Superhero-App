@@ -37,11 +37,11 @@ function SignUp() {
     }
   }
 
-  useEffect(() => {
-    console.log('user: ' + username);
-    console.log('email: ' + email);
-    console.log('pass: ' + password);
-  }, [username,email,password]);
+  // useEffect(() => {
+  //   console.log('user: ' + username);
+  //   console.log('email: ' + email);
+  //   console.log('pass: ' + password);
+  // }, [username,email,password]);
   
   return (
     <div>

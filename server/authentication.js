@@ -2,6 +2,8 @@ const {Router} = require('express');
 const router = Router();
 const User = require("./user.js");
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
+router.use(cookieParser());
 
 //functions
 //handle errors
@@ -29,7 +31,7 @@ const handleErrors = (err) => {
     }
   return errors;
 }
-const maxAge = 3 * 60 * 60;
+const maxAge = 3 * 60 * 60 * 10;
 //creates token
 const createToken = (id) =>{
   return jwt.sign({id}, 'test secret', {
@@ -70,23 +72,21 @@ router.post('/login', async (req,res) =>{
 
 
 //middleware
-const requireAuth = (req,res,next) =>{
-  console.log('cookies: ' + req.cookies);
+const requireAuth = (req, res, next) => {
   const token = req.cookies.jwt;
   //check token exists and is verified
-  if(token){
-    jwt.verify(token, 'test secret', (err, decodedToken)=>{
-      if(err){
+  if (token) {
+    jwt.verify(token, 'test secret', (err, decodedToken) => {
+      if (err) {
         console.log(err.message);
-        res.status(401).json({ error: 'Unauthorized' });
-        res.redirect('/');
-      }else{
+        return res.status(401).json({ isAuthenticated: false }); // Token is not verified
+      } else {
         console.log('decoded token: ' + decodedToken);
-        next();
+        next(); // Token is verified, proceed to the next middleware
       }
-    })
-  }else{
-    res.redirect('/');
+    });
+  } else {
+    res.status(401).json({ isAuthenticated: false }); // Token is missing
   }
 }
 

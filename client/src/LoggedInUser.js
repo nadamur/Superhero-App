@@ -332,10 +332,7 @@ function LoggedInUser() {
     <nav>
         <ul className="nav-links">
         <li>
-            <Link to = "/login" className="nav-button">Log In</Link>
-        </li>
-        <li>
-            <Link to="/signup" className="nav-button">Sign Up</Link>
+            <Link to = "/" className="nav-button">Home</Link>
         </li>
         </ul>
     </nav>
