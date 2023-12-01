@@ -19,26 +19,13 @@ function App() {
   const [errorMessage, setErrorMessage] = useState('Your Search Results will be displayed here...');
   //temporary array to hold search results
   const listItems = [];
-  //temporary array to hold selected results
-  const selectedListItems = [];
-  //sorting lists
-  const [sortedSearchResults, setSortedSearchResults] = useState([]);
-  //selection
-  const [selectedResults, setSelectedResults] = useState([]);
-  const selectedItemsRef = useRef([]);
-  //fav lists
-  const [favoriteLists, setFavoriteLists] = useState([]);
-  const [listNameToDelete, setListNameToDelete] = useState(favoriteLists.length > 0 ? favoriteLists[0] : '');
-  const [listNameToAdd, setListNameToAdd] = useState(favoriteLists.length > 0 ? favoriteLists[0] : '');
+  //drop down
+  const [dropdownStates, setDropdownStates] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
   useEffect(() => {
-    //sets favorite lists from back end
-    getFavLists();
     //displays search results
     displaySearch();
-    //sets up initial values
-    setListNameToAdd(favoriteLists.length > 0 ? favoriteLists[0] : '');
-    setListNameToDelete(favoriteLists.length > 0 ? favoriteLists[0] : '');
-  }, [searchResults, listNameToAdd, favoriteLists,selectedResults]);
+  }, [searchResults]);
 
   
   //function to check authentication
@@ -57,153 +44,6 @@ function App() {
 //     }
 //   };
 
-  //function to add selected items to a fav list
-  const addSelectedHeroesToList= async (event) =>{
-    event.preventDefault();
-    const url = `/api/lists/add/${listNameToAdd}?ids=${selectedResults}`;
-    try{
-      const response = await fetch(url, {
-        method: 'PUT',
-      });
-      if (response.status === 200) {
-        console.log('List created successfully');
-        // clear selectedItemsRef
-        selectedItemsRef.current.forEach((selectedItem) => {
-          selectedItem.classList.remove('selected');
-        });
-        selectedItemsRef.current = [];
-        setSelectedResults([]);
-      } else if (response.status === 404) {
-        console.log('List name already exists');
-      } else {
-        console.error('Error:', response.status);
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }
-
-  //function to delete a list
-  const deleteList= async () =>{
-    const url = `/api/lists/delete/${listNameToDelete}`;
-    try{
-      const response = await fetch(url, {
-        method: 'PUT',
-      });
-      if (response.status === 200) {
-        console.log('List created successfully');
-      } else if (response.status === 404) {
-        console.log('List name does not exist');
-      } else {
-        console.error('Error:', response.status);
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }
-
-  //function to display heroes in a fav list
-  const displayFavHeroes= async () =>{
-    
-  }
-
-  //function to add a result to 'selectedResults' list once it has been selected
-  const selectResults = (event) => {
-    event.preventDefault();
-    const listItem = event?.target?.closest('li');
-    if (listItem) {
-      const id = listItem.id;
-      setSelectedResults((prevSelectedResults) => {
-        if (prevSelectedResults.includes(id)) {
-          listItem.classList.remove('selected');
-          // Remove the element from selectedItemsRef
-          selectedItemsRef.current = selectedItemsRef.current.filter(
-            (selectedItem) => selectedItem !== listItem
-          );
-          return prevSelectedResults.filter((itemId) => itemId !== id);
-        } else {
-          listItem.classList.add('selected');
-          // Add the element to selectedItemsRef
-          selectedItemsRef.current = [...selectedItemsRef.current, listItem];
-          return [...prevSelectedResults, id];
-        }
-      });
-    }
-  }
-//function to remove all items from selected list
-  const resetSelectedResults= () =>{
-    selectedListItems.forEach((result)=>{
-      result.classList.remove("selected");
-    })
-    setSelectedResults([]);
-  }
-
-  //changes listNameToAdd variable to the currently selected list
-  const listAddNameChange= (event) =>{
-    const selectedList = event.target.value;
-    setListNameToAdd(selectedList);
-  }
-
-  //changes listNameToDelete variable to the currently selected list
-  const listDeleteNameChange= (event) =>{
-    const selectedList = event.target.value;
-    setListNameToDelete(selectedList);
-  }
-
-
-  //function to return fav list names
-  const getFavLists = async () => {
-    // fetch the list names
-    try {
-      const res = await fetch('api/lists/fav/names');
-      if (!res.ok){
-        throw new Error('Request failed');
-      }
-      const data = await res.json();
-
-      // compare the new list with the current list
-      if (!arraysAreEqual(data.listNames, favoriteLists)) {
-        // set list names as 'favoriteLists' array only if there are changes
-        setFavoriteLists(data.listNames);
-      }
-    } catch (error) {
-      console.error('Error fetching favorite lists:', error);
-    }
-  };
-
-  // helper function to compare two arrays -- to stop 'favoriteLists' from being updated in a loop
-  const arraysAreEqual = (array1, array2) => {
-    if (array1.length !== array2.length) {
-      return false;
-    }
-
-    for (let i = 0; i < array1.length; i++) {
-      if (array1[i] !== array2[i]) {
-        return false;
-      }
-    }
-
-    return true;
-  };
-
-   //function to return publisher names
-  const displayPublishers = async () => {
-    //fetch publisher names
-    try {
-      const res = await fetch('api/publishers');
-      if (!res.ok){
-        throw new Error('Request failed');
-      }
-      const data = await res.json();
-      const uniqueData = new Set(data);
-      const uniqueDataArray = [...uniqueData];
-      const joinedNames = uniqueDataArray.join(', ');
-      //alerts the publisher names
-      alert(joinedNames);
-    } catch (error) {
-      console.error('Error fetching favorite lists:', error);
-    }
-  };
   //function to get all hero info
   const getHero = async (id) => {
     try {
@@ -255,17 +95,17 @@ function App() {
     }
   };
 
-  //displays search results
-  const displaySearch = () =>{
-    if(searchResults){
-      return (
-        <ul>
-          {searchResults.map((item, index) => React.cloneElement(item, { key: index }))}
-        </ul>
-      );
-    }
+  // //displays search results
+  // const displaySearch = () =>{
+  //   if(searchResults){
+  //     return (
+  //       <ul>
+  //         {searchResults.map((item, index) => React.cloneElement(item, { key: index }))}
+  //       </ul>
+  //     );
+  //   }
     
-  }
+  // }
 
   //gives heroes attributes and pushes them to search results
   const displayHeroes = async (data) => {
@@ -279,15 +119,13 @@ function App() {
         ));
   
       let listItem = (
-        <li key={i} id={i} name={hero.name} race={hero.Race} publisher={hero.Publisher} className ={selectedResults.includes(i) ? 'selected' : ''}>
+        <li key={i} id={i} name={hero.name} race={hero.Race} publisher={hero.Publisher}>
           <strong style={{ color: '#007acc' }}>{hero.name} </strong>
           <br />
           <span style={{ fontSize: '14px' }}>
-            Powers: {Array.isArray(powers.powers) && powers.powers.length > 0
-              ? powers.powers.join(', ')
-              : 'None'}
+            Publisher: {hero.Publisher}
           </span>
-          {heroAttributes}
+          
         </li>
       );
       if (powers !== 'No Powers') {
@@ -352,6 +190,48 @@ function App() {
     }
   };
 
+  // Function to handle dropdown click
+  const toggleDropdown = (event, index) => {
+    event.stopPropagation();
+    setDropdownStates((prevStates) => {
+      const newStates = [...prevStates];
+      newStates[index] = !newStates[index];
+      return newStates;
+    });
+  };
+
+  const displaySearch = () => {
+    if (searchResults) {
+      return (
+        <ul>
+          {searchResults.map((item, index) => (
+            <div key={index} className="searchResult">
+              <li>
+              <strong style={{ color: '#007acc' }}>{item.props.name} </strong>
+              <br />
+              <span style={{ fontSize: '14px' }}>
+                Publisher: {item.props.publisher}
+              </span>
+                {/* Add an arrow for each list item */}
+                <span className="dropdownArrow" onClick={(event) => toggleDropdown(event, index)}>
+                  ▼
+                </span>
+              </li>
+              {/* Conditionally render the dropdown content based on the state */}
+              {dropdownStates[index] && (
+                <div className="dropdownContent">
+                  {/* Your dropdown content goes here */}
+                  <p>More info...</p>
+                  
+                </div>
+              )}
+            </div>
+          ))}
+        </ul>
+      );
+    }
+  };
+
   return (
     <AuthProvider>
       <Router>
@@ -413,7 +293,7 @@ function App() {
                   <h2>Heroes <span id="listName"></span></h2>
                   <div id="resultsContainer">
                   {/* Display Search Results */}
-                  <div id="searchResults" onClick={selectResults}>
+                  <div id="searchResults">
                   <p>{errorMessage}</p>
                   {displaySearch()}
                   </div>

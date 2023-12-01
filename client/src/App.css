@@ -53,7 +53,8 @@ h2 {
 }
 
 #searchResults ul li.selected {
-  background-color: lightblue;
+  color:white;
+  background-color: rgb(139, 0, 139);
 }
 
 select {
@@ -344,4 +345,20 @@ h1{
   color: rgb(139, 0, 139); /* Set the desired text color */
   margin-top: 0;
   margin-bottom: 0;
+}
+
+.dropdownArrow {
+  text-align: right;
+  cursor: pointer;
+  font-size: 20px; /* Adjust the size as needed */
+}
+.dropdownContent{
+  font-family: 'Your Cursive Font', cursive, 'fallback-cursive', sans-serif;
+  color:white;
+  margin-top: 0;
+  text-align: center;
+  border: 1px solid #ccc;
+  background-color: rgb(194, 75, 194);
+  padding: 0px;
+  transition: background-color 0.2s;
 }

@@ -26,6 +26,9 @@ function LoggedInUser() {
   const [favoriteLists, setFavoriteLists] = useState([]);
   const [listNameToDelete, setListNameToDelete] = useState(favoriteLists.length > 0 ? favoriteLists[0] : '');
   const [listNameToAdd, setListNameToAdd] = useState(favoriteLists.length > 0 ? favoriteLists[0] : '');
+  //drop down
+  const [dropdownStates, setDropdownStates] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     //sets favorite lists from back end
@@ -253,17 +256,47 @@ function LoggedInUser() {
   };
 
   //displays search results
-  const displaySearch = () =>{
-    if(searchResults){
+  const displaySearch = () => {
+    if (searchResults) {
       return (
         <ul>
-          {searchResults.map((item, index) => React.cloneElement(item, { key: index }))}
+          {searchResults.map((item, index) => (
+            <div key={index} className="searchResult">
+              <li>
+              <strong style={{ color: '#007acc' }}>{item.props.name} </strong>
+              <br />
+              <span style={{ fontSize: '14px' }}>
+                Publisher: {item.props.publisher}
+              </span>
+                {/* Add an arrow for each list item */}
+                <span className="dropdownArrow" onClick={(event) => toggleDropdown(event, index)}>
+                  ▼
+                </span>
+              </li>
+              {/* Conditionally render the dropdown content based on the state */}
+              {dropdownStates[index] && (
+                <div className="dropdownContent">
+                  {/* Your dropdown content goes here */}
+                  <p>More info...</p>
+                  
+                </div>
+              )}
+            </div>
+          ))}
         </ul>
       );
     }
-    
-  }
-
+  };
+  
+  // Function to handle dropdown click
+  const toggleDropdown = (event, index) => {
+    event.stopPropagation();
+    setDropdownStates((prevStates) => {
+      const newStates = [...prevStates];
+      newStates[index] = !newStates[index];
+      return newStates;
+    });
+  };
   //gives heroes attributes and pushes them to search results
   const displayHeroes = async (data) => {
     for (const i of data.ids) {
