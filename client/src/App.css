@@ -16,7 +16,7 @@
 }
 
 #searchResults,
-#addedListsResults {
+#publicListsResults {
   flex: 1;
   margin: 10px;
   padding: 10px;
@@ -38,12 +38,15 @@ h2 {
   border-radius: 5px;
 }
 
+#publicListsResults ul,
 #searchResults ul {
   list-style-type: none;
   padding: 0;
 }
 
+#publicListsResults ul li,
 #searchResults ul li {
+  text-align: center;
   margin: 10px 0;
   border: 1px solid #ccc;
   background-color: f0f0f0;
@@ -51,6 +54,7 @@ h2 {
   cursor: pointer;
   transition: background-color 0.2s;
 }
+
 
 #searchResults ul li.selected {
   color:white;
@@ -328,7 +332,7 @@ button:hover {
   padding: 10px;
   box-sizing: border-box; /* To include padding in the width calculation */
 }
-#favoriteHeroes {
+#publicLists {
   width: 50%; /* Adjust as needed */
   padding: 10px;
   box-sizing: border-box; /* To include padding in the width calculation */

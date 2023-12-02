@@ -26,26 +26,28 @@ function App() {
   const [dropdownStates, setDropdownStates] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   useEffect(() => {
+    checkAuthentication();
     //displays search results
     displaySearch();
   }, [searchResults]);
 
   
   //function to check authentication
-//   const checkAuthentication = async () => {
-//     try {
-//       // Make a request to your backend to check authentication
-//       const response = await fetch('/api/check-auth');
-//       if (response.ok) {
-//         setIsAuthenticated(true);
-//       } else {
-//         setIsAuthenticated(false);
-//       }
-//     } catch (error) {
-//       console.error('Error checking authentication:', error);
-//       setIsAuthenticated(false);
-//     }
-//   };
+  const checkAuthentication = async () => {
+    try {
+      // Make a request to your backend to check authentication
+      const response = await fetch('/api/check-auth');
+      if (response.ok) {
+        login();
+        console.log(isAuthenticated);
+      } else {
+        logout();
+      }
+    } catch (error) {
+      console.error('Error checking authentication:', error);
+      logout();
+    }
+  };
 
   //function to get all hero info
   const getHero = async (id) => {
@@ -311,23 +313,6 @@ function App() {
     login();
   }
 
-  //function to check authentication
-  const checkAuthentication = async () => {
-    try {
-      const response = await fetch('/api/check-auth');
-      if (response.ok) {
-        //set 'isAuthenticated' to true
-        login();
-      } else {
-        //set 'isAuthenticated' to false
-        logout();
-      }
-    } catch (error) {
-      console.error('Error checking authentication:', error);
-      logout();
-    }
-  };
-
   // Function to handle dropdown click
   const toggleDropdown = (event, index, heroName, heroPublisher) => {
     event.stopPropagation();
@@ -387,7 +372,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<LogIn on authenticationComplete={loggedIn}/>} />
           <Route path="/signup" element={<SignUp on authenticationComplete={loggedIn}/>} />
-          <Route path="/loggedin" element={isAuthenticated ? <LoggedInUser /> : <Navigate to="/signup"/>} />
+          <Route path="/loggedin" element={isAuthenticated ? <LoggedInUser /> : <Navigate to="/login"/>} />
           
           <Route
             path="/"
@@ -481,10 +466,12 @@ function App() {
                   </div>
 
                   {/* Bottom Right: Favorite Heroes */}
-                  <div id="favoriteHeroes">
+                  <div id="publicLists">
                   <h2>Public Lists</h2>
-                  <div id="addedListsResults">
-                      <ul>Your Heroes will be displayed here...</ul>
+                  <div id="publicListsResults">
+                  {/* {favoriteLists.map((listName) => (
+                    <ul key={listName}>{listName} </ul>
+                  ))} */}
                   </div>
                   </div>
               </div>

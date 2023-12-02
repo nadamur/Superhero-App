@@ -1,12 +1,15 @@
 // App.js
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { useAuth } from './authContext';
 import './App.css'; // Import your CSS file
 import LogIn from './LogIn.js';
 import SignUp from './SignUp.js';
 
 
 function LoggedInUser() {
+  //authentication
+  const {isAuthenticated, login, logout} = useAuth();
   //search related
   const [raceInput, setRaceInput] = useState('');
   const [nameInput, setNameInput] = useState('');
@@ -33,6 +36,8 @@ function LoggedInUser() {
   const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
+    checkAuthentication();
+    console.log('updating');
     //sets favorite lists from back end
     getFavLists();
     //displays search results
@@ -44,20 +49,20 @@ function LoggedInUser() {
 
 
   //function to check authentication
-//   const checkAuthentication = async () => {
-//     try {
-//       // Make a request to your backend to check authentication
-//       const response = await fetch('/api/check-auth');
-//       if (response.ok) {
-//         setIsAuthenticated(true);
-//       } else {
-//         setIsAuthenticated(false);
-//       }
-//     } catch (error) {
-//       console.error('Error checking authentication:', error);
-//       setIsAuthenticated(false);
-//     }
-//   };
+  const checkAuthentication = async () => {
+    try {
+      // Make a request to your backend to check authentication
+      const response = await fetch('/api/check-auth');
+      if (response.ok) {
+        login();
+      } else {
+        logout();
+      }
+    } catch (error) {
+      console.error('Error checking authentication:', error);
+      logout();
+    }
+  };
 
   //function to add selected items to a fav list
   const addSelectedHeroesToList= async (event) =>{
@@ -86,14 +91,20 @@ function LoggedInUser() {
   }
 
   //function to delete a list
-  const deleteList= async () =>{
+  const deleteList= async (event) =>{
     const url = `/api/lists/delete/${listNameToDelete}`;
     try{
       const response = await fetch(url, {
         method: 'PUT',
       });
       if (response.status === 200) {
-        console.log('List created successfully');
+        console.log('List deleted successfully');
+        //temporary list
+        const tempFavList = favoriteLists;
+        const indexOfName = favoriteLists.indexOf(listNameToDelete);
+        tempFavList.splice(indexOfName,1);
+        setFavoriteLists(tempFavList);
+        console.log('new:' + favoriteLists);
       } else if (response.status === 404) {
         console.log('List name does not exist');
       } else {
@@ -104,9 +115,37 @@ function LoggedInUser() {
     }
   }
 
-  //function to display heroes in a fav list
-  const displayFavHeroes= async () =>{
-    
+  //function to create new list --> defaults to private, includes username
+  const createList= async () =>{
+    const listName = prompt('Enter the name for the new list: ');
+    if(listName){
+      //name needs to be between 3 and 50 characters
+      if (listName.length < 3 || listName.length > 50) {
+        alert('List name should be between 3 and 50 characters.');
+      }
+      //name can only have letters, numbers and spaces
+      else if (!/^[a-zA-Z0-9\s]+$/.test(listName)) {
+        alert('List name can only contain letters numbers and spaces.');
+      }else{
+        const url = `/api/lists/${listName}`;
+        try{
+          const response = await fetch(url, {
+            method: 'POST',
+          });
+          if (response.status === 201) {
+            console.log('List created successfully');
+          } else if (response.status === 404) {
+            alert('List name already exists, try again');
+          } else {
+            console.error('Error in creating list', response.status);
+          }
+        } catch (error) {
+          console.error('Error in creating list:', error);
+          }
+          const prevFavLists = favoriteLists;
+          setFavoriteLists([...prevFavLists, listName]);
+      }
+    }
   }
 
   //function to add a result to 'selectedResults' list once it has been selected
@@ -151,6 +190,11 @@ function LoggedInUser() {
     const selectedList = event.target.value;
     setListNameToDelete(selectedList);
   }
+
+  const displayFavHeroes= () =>{
+
+  }
+
 
 
   //function to return fav list names
@@ -532,56 +576,56 @@ function LoggedInUser() {
         <div id="searchSuperheroes">
         <h2>Search Superheroes</h2>
         <form id="searchForm" onSubmit={handleSearch}>
-                  <div className="searchInputContainer">
-                      <label htmlFor="nameInput">Name:</label>
-                      <input
-                      type="text"
-                      id="nameInput"
-                      value={nameInput}
-                      onChange={(e) => setNameInput(e.target.value)}
-                      placeholder="Search by name . . ."
-                      />
-                      </div>
-                      <div className="searchInputContainer">
-                      <label htmlFor="raceInput">Race:</label>
-                      <input
-                      type="text"
-                      id="raceInput"
-                      value={raceInput}
-                      onChange={(e) => setRaceInput(e.target.value)}
-                      placeholder="Search by race . . ."
-                      />
-                      </div>
-                      <div className="searchInputContainer">
-                      <label htmlFor="publisherInput">Publisher:</label>
-                      <input
-                      type="text"
-                      id="publisherInput"
-                      value={publisherInput}
-                      onChange={(e) => setPublisherInput(e.target.value)}
-                      placeholder="Search by publisher . . ."
-                      />
-                      </div>
-                      <div className="searchInputContainer">
-                      <label htmlFor="powerInput">Power:</label>
-                      <input
-                      type="text"
-                      id="powerInput"
-                      value={powerInput}
-                      onChange={(e) => setPowerInput(e.target.value)}
-                      placeholder="Search by power . . ."
-                      />
-                    </div>
-                    <button type="submit" id="searchButton">
-                    Search
-                    </button>
-                  </form>
+          <div className="searchInputContainer">
+              <label htmlFor="nameInput">Name:</label>
+              <input
+              type="text"
+              id="nameInput"
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
+              placeholder="Search by name . . ."
+              />
+              </div>
+              <div className="searchInputContainer">
+              <label htmlFor="raceInput">Race:</label>
+              <input
+              type="text"
+              id="raceInput"
+              value={raceInput}
+              onChange={(e) => setRaceInput(e.target.value)}
+              placeholder="Search by race . . ."
+              />
+              </div>
+              <div className="searchInputContainer">
+              <label htmlFor="publisherInput">Publisher:</label>
+              <input
+              type="text"
+              id="publisherInput"
+              value={publisherInput}
+              onChange={(e) => setPublisherInput(e.target.value)}
+              placeholder="Search by publisher . . ."
+              />
+              </div>
+              <div className="searchInputContainer">
+              <label htmlFor="powerInput">Power:</label>
+              <input
+              type="text"
+              id="powerInput"
+              value={powerInput}
+              onChange={(e) => setPowerInput(e.target.value)}
+              placeholder="Search by power . . ."
+              />
+            </div>
+            <button type="submit" id="searchButton">
+            Search
+            </button>
+          </form>
         </div>
 
         {/* Top Right: Favorite Lists */}
         <div id="favoriteLists">
         <h2>Favourite Lists</h2>
-        <button id="addListButton">Add List</button>
+        <button id="addListButton" onClick={createList}>Add List</button>
         <form id="deleteForm">
             <label htmlFor="listNamesToDelete">Delete List:</label>
             <select id="listNamesToDelete" onChange={listDeleteNameChange} className="select-styled">
@@ -589,7 +633,7 @@ function LoggedInUser() {
                 <option key={listName}>{listName} </option>
             ))}
             </select>
-            <button type="submit" id="deleteListButton" onClick={deleteList}>
+            <button type="submit" id="deleteListButton" onClick={(e)=>{deleteList(e)}}>
             Delete
             </button>
         </form>
@@ -632,10 +676,14 @@ function LoggedInUser() {
         </div>
 
         {/* Bottom Right: Favorite Heroes */}
-        <div id="favoriteHeroes">
-        <h2>Favorite Heroes</h2>
-        <div id="addedListsResults">
-            <ul>Your Heroes will be displayed here...</ul>
+        <div id="publicLists">
+        <h2>Public Lists</h2>
+        <div id="publicListsResults">
+          <ul>
+        {favoriteLists.map((listName) => (
+                    <li key={listName}>{listName} </li>
+                  ))}
+          </ul>
         </div>
         </div>
     </div>

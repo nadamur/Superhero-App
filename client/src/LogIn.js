@@ -5,7 +5,7 @@ import { useAuth } from './authContext';
 
 function LogIn({authenticationComplete}) {
   //authentication
-  const {isAuthenticated, login} = useAuth();
+  const {isAuthenticated, login, logout} = useAuth();
   //user info
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -43,8 +43,25 @@ function LogIn({authenticationComplete}) {
     }
   }
 
+  //check authentication
+  const checkAuthentication = async () => {
+    try {
+      // Make a request to your backend to check authentication
+      const response = await fetch('/api/check-auth');
+      if (response.ok) {
+        login();
+      } else {
+        logout();
+      }
+    } catch (error) {
+      console.error('Error checking authentication:', error);
+      logout();
+    }
+  };
+
   //this will run when the authentication goes through
   useEffect(() => {
+    checkAuthentication();
     console.log('authenticated login: ' + isAuthenticated);
   }, [isAuthenticated]);
   
