@@ -11,6 +11,7 @@ const mainDir = path.join(__dirname, '../');
 const clientDir = path.join(__dirname, '../client');
 const userRoutes = require('./authentication.js');
 const cookieParser = require('cookie-parser');
+const stringSimilarity = require('string-similarity');
 app.use(express.static(mainDir));
 app.use(express.static(clientDir));
 app.use(express.json());
@@ -26,8 +27,31 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true, useCr
 //required functions
 //function takes a pattern, returns a set number of hero ids that match given pattern
 function getHeroIds(n, pattern, field, res){
-    const superheroes = superheroesInfo.filter((hero) => hero[pattern].toLowerCase().includes(field.toLowerCase()));
-    const ids = superheroes.map(hero => hero.id);
+    const similarityThreshold = 0.7;
+    //check if empty field
+    if (field === '' || field === undefined){
+        //return all ids
+        const ids = superheroesInfo.map(hero => hero.id);
+        if (ids.length > 0) {
+            res.json({ ids: ids });
+            return;
+        }else{
+            res.status(404).json({ error: 'No heroes found' });
+            return;
+        }
+    }
+    const searchStrings = field.toLowerCase().split(/\s+/);
+    const matchedHeroes = superheroesInfo.filter((hero) => {
+        const fieldValue = hero[pattern].toLowerCase();
+        return searchStrings.every((searchString) =>{
+            //check if field starts with the search string
+            const startsWithMatch = fieldValue.startsWith(searchString);
+            //check string similarity
+            const similarityScore = stringSimilarity.compareTwoStrings(fieldValue, searchString);
+            return startsWithMatch || similarityScore >=similarityThreshold;
+        })
+    });
+    const ids = matchedHeroes.map(hero => hero.id);
 
     if (ids.length > 0) {
         const limitedIds = ids.slice(0, n);
@@ -129,7 +153,7 @@ app.get('/api/publishers', (req, res) => {
 });
 
 //this method will return n number of search results (hero ids) for given search pattern
-app.get('/api/search/:pattern/:field/:n', (req, res) => {
+app.get('/api/search/:pattern/:field?/:n', (req, res) => {
     const n = parseInt(req.params.n);
     const pattern = req.params.pattern;
     const field = req.params.field;
@@ -145,35 +169,54 @@ app.get('/api/search/:pattern/:field/:n', (req, res) => {
             getHeroIds(n,'Publisher',field, res);
             break;
         case 'power':
-            const heroes = superheroesPowers.filter(hero => {
-                // Iterate through each property (power name) of the hero object
-                for (const power in hero) {
-                    if (hero[power] === "True" && power.toLowerCase().includes(field)) {
-                        return true;
+            if (field === '' || field === undefined){
+                const names = superheroesPowers.map((hero) => hero.hero_names);
+                ids = [];
+                for (const n of names){
+                    const hero = superheroesInfo.find((hero) => hero.name.toLowerCase() === n.toLowerCase());
+                    if (hero){
+                        ids.push(hero.id);
                     }
                 }
-                return null;
-            });
-            const names = heroes.map((hero) => hero.hero_names);
-            ids = [];
-            for (const n of names){
-                const hero = superheroesInfo.find((hero) => hero.name.toLowerCase() === n.toLowerCase());
-                if (hero){
-                    ids.push(hero.id);
+                if (ids.length > 0) {
+                    res.json({ ids: ids });
+                    return;
+                } else {
+                res.status(404).json({ error: 'No heroes found for this power' });
+                return;
+                }
+            }else{
+                const heroes = superheroesPowers.filter(hero => {
+                    // Iterate through each property (power name) of the hero object
+                    for (const power in hero) {
+                        if (hero[power] === "True" && power.toLowerCase().includes(field)) {
+                            return true;
+                        }
+                    }
+                    return null;
+                });
+                const names = heroes.map((hero) => hero.hero_names);
+                ids = [];
+                for (const n of names){
+                    const hero = superheroesInfo.find((hero) => hero.name.toLowerCase() === n.toLowerCase());
+                    if (hero){
+                        ids.push(hero.id);
+                    }
+                }
+                if (ids.length > 0) {
+                    const limitedIds = ids.slice(0, n);
+                    res.json({ ids: limitedIds });
+                    return;
+                } else {
+                res.status(404).json({ error: 'No heroes found for this power' });
+                return;
                 }
             }
-            if (ids.length > 0) {
-                const limitedIds = ids.slice(0, n);
-                res.json({ ids: limitedIds });
-                return;
-            } else {
-            res.status(404).json({ error: 'No heroes found for this publisher' });
-            return;
-            }
-            break;
+            
     }
 });
 
+//lists created are private by default
 //this method will create a list with a list name and returns an error if the name already exists
 app.post('/api/lists/:listName', (req, res) => {
     const listName = req.params.listName;

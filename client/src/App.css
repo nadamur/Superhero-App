@@ -305,13 +305,13 @@ button:hover {
   text-align: right;
 }
 #AboutUs p {
-  text-align: left;
+  text-align: center;
   font-family: 'Your Cursive Font', cursive, 'fallback-cursive', sans-serif;
   font-size: 16px;
   line-height: 1.5;
   color: rgb(139, 0, 139);
   background-color: #f8f8f8;
-  padding: 5px;
+  padding: 50px;
 }
 
 /* App.css */
@@ -360,4 +360,50 @@ h1{
   background-color: rgb(194, 75, 194);
   padding: 10px;
   transition: background-color 0.2s;
+}
+.searchInputContainer {
+  margin-top: 10px;
+  display: flex;
+  align-items: center; /* Align items vertically */
+}
+
+.searchInputContainer label {
+  margin-left: 20px;
+  margin-right: 20px; /* Adjust as needed */
+  min-width: 80px; /* Adjust as needed */
+}
+.searchInputContainer input{
+  width: 300px;
+}
+#searchForm {
+  /* Add styles to center the button vertically */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#searchForm button {
+  margin-top: 10px; /* Add top margin to separate the button from the inputs */
+}
+.dropdownContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#DDGButton {
+  margin-top:10px;
+  padding: 5px 10px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+  color: rgb(139, 0, 139);
+}
+#DDGButton:hover{
+  color: white;
+  background-color: #007acc;
 }

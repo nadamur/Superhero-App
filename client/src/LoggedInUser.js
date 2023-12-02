@@ -8,8 +8,10 @@ import SignUp from './SignUp.js';
 
 function LoggedInUser() {
   //search related
-  const [pattern, setPattern] = useState('name');
-  const [field, setField] = useState('');
+  const [raceInput, setRaceInput] = useState('');
+  const [nameInput, setNameInput] = useState('');
+  const [publisherInput, setPublisherInput] = useState('');
+  const [powerInput, setPowerInput] = useState('');
   const [searchResultIds, setSearchResultIds] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [errorMessage, setErrorMessage] = useState('Your Search Results will be displayed here...');
@@ -233,26 +235,174 @@ function LoggedInUser() {
     }
   }
 
-  //function to retrieve ids of heroes that match search
-  const searchSuperheroes = async (criteria) => {
-    try {
-      setSearchResults([]);
-      const response = await fetch(`/api/search/${pattern}/${field}/5`);
-      if (!response.ok) {
-        //if no heroes found, displays message
-        setErrorMessage('No Heroes Found . . .');
-        setSearchResultIds([]);
-        //if heroes found
-      }else{
-        const data = await response.json();
-        setSearchResultIds(data.ids);
-        setErrorMessage('Loading...');
-        await displayHeroes(data);
-        setErrorMessage('');
+    //function to retrieve ids of heroes that match search
+  //get search results from each individual search box, then find matching results and only display those
+  const searchSuperheroes = async () => {
+    //number of results
+    const n = 10;
+    //temporary arrays to hold results for each search
+    const nameIds = [];
+    const raceIds = [];
+    const publisherIds = [];
+    const powerIds = [];
+    const ids = [];
+    //name search
+    //if empty name, send without field
+    if(nameInput === ''){
+      try {
+        setSearchResults([]);
+        const response = await fetch(`/api/search/name/${n}`);
+        if (!response.ok) {
+          //if no heroes found, displays message
+          console.log("No name results");
+        }else{
+          const data = await response.json();
+          setErrorMessage('Loading...');
+          for(const id of data.ids){
+            nameIds.push(id);
+          }
+        }
+      } catch (error) {
+        console.error('Error:', error);
       }
-    } catch (error) {
-      console.error('Error:', error);
+    }else{
+      try {
+        setSearchResults([]);
+        const response = await fetch(`/api/search/name/${nameInput}/${n}`);
+        if (!response.ok) {
+          //if no heroes found, displays message
+          console.log("No name results");
+        }else{
+          const data = await response.json();
+          setErrorMessage('Loading...');
+          for(const id of data.ids){
+            nameIds.push(id);
+          }
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
     }
+    
+
+    //race search
+    //if race empty, send without field
+    if(raceInput===''){
+      try {
+        const response = await fetch(`/api/search/race/${n}`);
+        if (!response.ok) {
+          //if no heroes found, displays message
+          console.log("No race results");
+        }else{
+          const data = await response.json();
+          setErrorMessage('Loading...');
+          for(const id of data.ids){
+            raceIds.push(id);
+          }
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+    else{
+      try {
+        const response = await fetch(`/api/search/race/${raceInput}/${n}`);
+        if (!response.ok) {
+          //if no heroes found, displays message
+          console.log("No race results");
+        }else{
+          const data = await response.json();
+          setErrorMessage('Loading...');
+          for(const id of data.ids){
+            raceIds.push(id);
+          }
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    //publisher search
+    if(publisherInput===''){
+      try {
+        const response = await fetch(`/api/search/publisher/${n}`);
+        if (!response.ok) {
+          //if no heroes found, displays message
+          console.log("No publishers results");
+        }else{
+          const data = await response.json();
+          setErrorMessage('Loading...');
+          for(const id of data.ids){
+            publisherIds.push(id);
+          }
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }else{
+      try {
+        const response = await fetch(`/api/search/publisher/${publisherInput}/${n}`);
+        if (!response.ok) {
+          //if no heroes found, displays message
+          console.log("No publishers results");
+        }else{
+          const data = await response.json();
+          setErrorMessage('Loading...');
+          for(const id of data.ids){
+            publisherIds.push(id);
+          }
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    //power search
+    if(powerInput===''){
+      try {
+        const response = await fetch(`/api/search/power/${n}`);
+        if (!response.ok) {
+          //if no heroes found, displays message
+          console.log("No powers results");
+        }else{
+          const data = await response.json();
+          setErrorMessage('Loading...');
+          for(const id of data.ids){
+            powerIds.push(id);
+          }
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }else{
+      try {
+        const response = await fetch(`/api/search/power/${powerInput}/${n}`);
+        if (!response.ok) {
+          //if no heroes found, displays message
+          console.log("No powers results");
+        }else{
+          const data = await response.json();
+          setErrorMessage('Loading...');
+          for(const id of data.ids){
+            powerIds.push(id);
+          }
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+    
+    //final ids
+    for (const id of nameIds){
+      if(raceIds.includes(id) && powerIds.includes(id) && publisherIds.includes(id)){
+        ids.push(id);
+      }
+    }
+    setSearchResultIds(ids);
+    console.log('final ids: ' + searchResultIds);
+    //display heroes
+    await displayHeroes();
+    setErrorMessage('');
   };
 
   //displays search results
@@ -276,9 +426,17 @@ function LoggedInUser() {
               {/* Conditionally render the dropdown content based on the state */}
               {dropdownStates[index] && (
                 <div className="dropdownContent">
+                  <span>
+                  Gender: {item.props.gender}, 
+                  Eye colour: {item.props.eye}, 
+                  Race: {item.props.race}, 
+                  Hair colour: {item.props.hair}, 
+                  Height: {item.props.height}, 
+                  Skin colour: {item.props.skin}, 
+                  Alignment: {item.props.alignment}, 
+                  Weight: {item.props.weight}
+                  </span>
                   {/* Your dropdown content goes here */}
-                  <p>More info...</p>
-                  
                 </div>
               )}
             </div>
@@ -298,8 +456,8 @@ function LoggedInUser() {
     });
   };
   //gives heroes attributes and pushes them to search results
-  const displayHeroes = async (data) => {
-    for (const i of data.ids) {
+  const displayHeroes = async () => {
+    for (const i of searchResultIds) {
       const hero = await getHero(i);
       const powers = await getPowers(i);
       const heroAttributes = Object.entries(hero)
@@ -374,24 +532,50 @@ function LoggedInUser() {
         <div id="searchSuperheroes">
         <h2>Search Superheroes</h2>
         <form id="searchForm" onSubmit={handleSearch}>
-            <label htmlFor="searchInput">Search by:</label>
-            <select id="searchCategory">
-            <option value="name">Name</option>
-            <option value="race">Race</option>
-            <option value="publisher">Publisher</option>
-            <option value="power">Power</option>
-            </select>
-            <input
-            type="text"
-            id="searchInput"
-            value={field}
-            onChange={(e) => setField(e.target.value)}
-            placeholder="Search . . ."
-            />
-            <button type="submit" id="searchButton">
-            Search
-            </button>
-        </form>
+                  <div className="searchInputContainer">
+                      <label htmlFor="nameInput">Name:</label>
+                      <input
+                      type="text"
+                      id="nameInput"
+                      value={nameInput}
+                      onChange={(e) => setNameInput(e.target.value)}
+                      placeholder="Search by name . . ."
+                      />
+                      </div>
+                      <div className="searchInputContainer">
+                      <label htmlFor="raceInput">Race:</label>
+                      <input
+                      type="text"
+                      id="raceInput"
+                      value={raceInput}
+                      onChange={(e) => setRaceInput(e.target.value)}
+                      placeholder="Search by race . . ."
+                      />
+                      </div>
+                      <div className="searchInputContainer">
+                      <label htmlFor="publisherInput">Publisher:</label>
+                      <input
+                      type="text"
+                      id="publisherInput"
+                      value={publisherInput}
+                      onChange={(e) => setPublisherInput(e.target.value)}
+                      placeholder="Search by publisher . . ."
+                      />
+                      </div>
+                      <div className="searchInputContainer">
+                      <label htmlFor="powerInput">Power:</label>
+                      <input
+                      type="text"
+                      id="powerInput"
+                      value={powerInput}
+                      onChange={(e) => setPowerInput(e.target.value)}
+                      placeholder="Search by power . . ."
+                      />
+                    </div>
+                    <button type="submit" id="searchButton">
+                    Search
+                    </button>
+                  </form>
         </div>
 
         {/* Top Right: Favorite Lists */}
