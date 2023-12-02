@@ -125,7 +125,7 @@ function LoggedInUser() {
         alert('List name should be between 3 and 50 characters.');
       }
       //name can only have letters, numbers and spaces
-      else if (!/^[a-zA-Z0-9\s]+$/.test(listName)) {
+      else if (!/^[a-zA-Z0-9\s-]+$/.test(listName)) {
         alert('List name can only contain letters numbers and spaces.');
       }else{
         const url = `/api/lists/${listName}`;

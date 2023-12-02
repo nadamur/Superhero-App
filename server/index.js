@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const fs = require('fs');
 const superheroesInfo = require('../superhero_info.json');
 const superheroesPowers = require('../superhero_powers.json');
+const listDetails = '../superhero_reviews.json';
 const mainDir = path.join(__dirname, '../');
 const clientDir = path.join(__dirname, '../client');
 const userRoutes = require('./authentication.js');
@@ -25,6 +26,25 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true, useCr
   .catch((err) => console.log(err));
 
 //required functions
+//function returns current date in required format
+function getCurrentFormattedDateTime() {
+    const currentDate = new Date();
+  
+    // Get day, month, and year components
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const year = String(currentDate.getFullYear()).slice(-2);
+  
+    // Get hour, minute, and second components
+    const hour = String(currentDate.getHours()).padStart(2, '0');
+    const minute = String(currentDate.getMinutes()).padStart(2, '0');
+    const second = String(currentDate.getSeconds()).padStart(2, '0');
+  
+    // Format the date and time
+    const formattedDateTime = `${day}-${month}-${year} ${hour}:${minute}:${second}`;
+  
+    return formattedDateTime;
+  }
 //function takes a pattern, returns a set number of hero ids that match given pattern
 function getHeroIds(n, pattern, field, res){
     const similarityThreshold = 0.7;
@@ -266,8 +286,37 @@ app.post('/api/lists/:listName', (req, res) => {
                     return;
                 }
                 });
-        }
+            }
       });
+      //now add the list to the superhero_reviews file with default values
+      fs.readFile(listDetails, 'utf-8', (err, data) => {
+        if (err) {
+        console.error('Error reading JSON file:', err);
+        res.status(500).json({ error: 'Internal server error' });
+        return;
+        }
+        try {
+        const jsonData = JSON.parse(data);
+        const newEntry ={
+            name: listName,
+            ratings: [],
+            comments: [],
+            nicknames: [],
+            status: [],
+            reviewDate: [],
+            visibility: "private",
+            lastModified: getCurrentFormattedDateTime()
+        };
+        jsonData.push(newEntry);
+        fs.writeFileSync(listDetails, JSON.stringify(jsonData, null, 2), 'utf8');
+        console.log('New list defaulted successfully');
+        } catch (parseError) {
+        console.error('Error parsing JSON data:', parseError);
+        res.status(500).json({ error: 'Error parsing JSON data' });
+        return;
+        }
+    });
+
 });
 //save list of superhero IDs to a given list name
 app.put('/api/lists/add/:listNameAndIds', (req, res) => {
@@ -394,6 +443,104 @@ app.get('/api/lists/info/:listName', (req, res) => {
             return;
         }     
       }); 
+});
+
+//this method will return list names in review file
+app.get('/api/lists/details/names', (req, res) => {
+    fs.readFile(listDetails, 'utf-8', (err, data) => {
+      if (err) {
+        console.error('Error reading JSON file:', err);
+        res.status(500).json({ error: 'Internal server error' });
+        return;
+      }
+  
+      try {
+        const jsonData = JSON.parse(data);
+        const listNames = jsonData.map(list => list.name);
+  
+        if (listNames.length > 0) {
+          res.json({ listNames });
+          return;
+        } else {
+          res.status(404).json({ error: 'No lists found' });
+          return;
+        }
+      } catch (parseError) {
+        console.error('Error parsing JSON data:', parseError);
+        res.status(500).json({ error: 'Error parsing JSON data' });
+        return;
+      }
+    });
+  });
+
+//this method will return all the reviews of a list
+app.get('/api/lists/details/reviews/:listName', (req, res) => {
+    const listName = req.params.listName;
+    fs.readFile(listDetails, 'utf-8', (err, data) => {
+        if (err) {
+        console.error('Error reading JSON file:', err);
+        res.status(500).json({ error: 'Internal server error' });
+        return;
+        }
+
+        try {
+        const jsonData = JSON.parse(data);
+        const list = jsonData.find(list => list.name === listName);
+        console.log(list);
+
+        if (list) {
+            const { ratings, comments, visibility, nicknames, reviewDate } = list;
+            res.json({ ratings, comments, visibility, nicknames, reviewDate });
+            return;
+        } else {
+            res.status(404).json({ error: 'No reviews found' });
+            return;
+        }
+        } catch (parseError) {
+        console.error('Error parsing JSON data:', parseError);
+        res.status(500).json({ error: 'Error parsing JSON data' });
+        return;
+        }
+    });
+});
+
+//this method will add a new review to a list
+//status is public as default
+//reviewDate is calculated using method
+//assuming we are getting the JSON file with 'rating','comment','nickname'
+app.put('/api/lists/details/reviews/:listName', (req, res) => {
+    const listName = req.params.listName;
+    const { rating, comment, nickname } = req.body;
+    fs.readFile(listDetails, 'utf-8', (err, data) => {
+        if (err) {
+          console.error('Error reading JSON file:', err);
+          res.status(500).json({ error: 'Internal server error' });
+        }
+        try{
+            const jsonData = JSON.parse(data);
+            //find specific list
+            const list = jsonData.find(l => l.name === listName);
+            //if found
+            if (list){
+                list.ratings.push(rating);
+                list.comments.push(comment);
+                list.nicknames.push(nickname);
+                list.status.push("public");
+                list.reviewDate.push(getCurrentFormattedDateTime());
+                // write the modified data back to the file
+                fs.writeFileSync(listDetails, JSON.stringify(jsonData, null, 2), 'utf8');
+                console.log('Ratings updated');
+                res.status(200).json({ message: 'Ratings updated' });
+            }else{
+                console.log("List not found");
+                res.status(404).json({ error: 'List not found' });
+            }
+        }
+        catch(error){
+            console.error('Error parsing JSON data:', error);
+            res.status(500).json({ error: 'Error parsing JSON data' });
+        }
+      });
 });
 
 app.get('/', (req, res) => {
