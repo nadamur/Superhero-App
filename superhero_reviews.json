@@ -1,82 +1,12 @@
 [
   {
-    "name": "listName5",
-    "ratings": [
-      "5",
-      "2",
-      "2",
-      "2"
-    ],
-    "comments": [
-      "good",
-      "",
-      "bad",
-      "good",
-      ""
-    ],
-    "nicknames": [
-      "gg",
-      "kk",
-      "ff",
-      "user2",
-      "user2"
-    ],
-    "status": [
-      "hidden",
-      "visible",
-      "visible",
-      "public",
-      "public"
-    ],
-    "reviewDate": [
-      "01-10-23",
-      "02-10-23",
-      "03-10-23",
-      "02-12-23 16:49:26",
-      "02-12-23 16:49:35"
-    ],
-    "visbility": "public",
-    "lastModified": "01-02-23"
-  },
-  {
-    "name": "listName2",
-    "ratings": [
-      "2",
-      "2",
-      "2"
-    ],
-    "comments": [
-      "good",
-      "",
-      "bad"
-    ],
-    "nicknames": [
-      "gg",
-      "kk",
-      "ff",
-      "tt"
-    ],
-    "status": [
-      "visible",
-      "visible",
-      "visible"
-    ],
-    "reviewDate": [
-      "01-10-23",
-      "04-10-23",
-      "05-10-23"
-    ],
-    "visbility": "public",
-    "lastModified": "01-02-23"
-  },
-  {
-    "name": "test",
+    "name": "list2",
     "ratings": [],
     "comments": [],
     "nicknames": [],
     "status": [],
     "reviewDate": [],
     "visibility": "private",
-    "lastModified": "02-12-23"
+    "lastModified": "02-12-23 17:23:48"
   }
 ]
