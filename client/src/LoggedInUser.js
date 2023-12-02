@@ -92,6 +92,7 @@ function LoggedInUser() {
 
   //function to delete a list
   const deleteList= async (event) =>{
+    event.preventDefault();
     const url = `/api/lists/delete/${listNameToDelete}`;
     try{
       const response = await fetch(url, {
@@ -100,7 +101,7 @@ function LoggedInUser() {
       if (response.status === 200) {
         console.log('List deleted successfully');
         //temporary list
-        const tempFavList = favoriteLists;
+        const tempFavList = favoriteLists.slice();
         const indexOfName = favoriteLists.indexOf(listNameToDelete);
         tempFavList.splice(indexOfName,1);
         setFavoriteLists(tempFavList);
