@@ -27,8 +27,8 @@ function ListInfo() {
     useEffect(() => {
       setMessage('Loading...');
       getListInfo();
-      // checkAuthentication();
-      // checkUser();
+      checkAuthentication();
+      checkUser();
 
     }, []);
 

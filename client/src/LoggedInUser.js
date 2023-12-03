@@ -37,6 +37,9 @@ function LoggedInUser() {
   //drop down
   const [dropdownStates, setDropdownStates] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  //public lists
+  const [publicLists, setPublicLists] = useState([]);
+  const [publicListsDropDown, setPublicListsDropDown] = useState([]);
 
   //useEffect to make sure the user is authenticated and check logged in user, only runs at mount
   useEffect(()=>{
@@ -52,6 +55,8 @@ function LoggedInUser() {
 
   //runs when user is successfully logged in in order to find appropriate list names
   useEffect(() => {
+    //displats public lists
+    displayPublicLists();
     //sets favorite lists from back end
     getFavLists();
     //displays search results
@@ -60,6 +65,14 @@ function LoggedInUser() {
     setListNameToAdd(favoriteLists.length > 0 ? favoriteLists[0] : '');
     setListNameToDelete(favoriteLists.length > 0 ? favoriteLists[0] : '');
   }, [searchResults, favoriteLists, logInStatus]);
+
+  useEffect(() => {
+    const fetchLists = async () => {
+        const listsArray = await displayPublicLists();
+        setPublicLists(listsArray);
+      };
+      fetchLists();
+  }, [publicListsDropDown]);
 
 
   //check authentication
@@ -312,6 +325,13 @@ function LoggedInUser() {
       return null; // Handle the error gracefully
     }
   }
+
+  //display list info
+  const displayList = (name)=>{
+    const n = name;
+    navigate(`/listDisplay/${n}`);
+  }
+
   //function to get all hero powers
   const getPowers = async (id) => {
     try {
@@ -525,7 +545,8 @@ function LoggedInUser() {
                   Height: {item.props.height}, 
                   Skin colour: {item.props.skin}, 
                   Alignment: {item.props.alignment}, 
-                  Weight: {item.props.weight}
+                  Weight: {item.props.weight},
+                  Powers: {item.props.power === 'No Powers' ? 'None' : item.props.power.length > 1 ? item.props.power.join(', ') : item.props.power}
                   </span>
                   {/* Your dropdown content goes here */}
                 </div>
@@ -536,6 +557,56 @@ function LoggedInUser() {
       );
     }
   };
+
+  //function to display public lists
+  const displayPublicLists = async () =>{
+    try {
+      const response = await fetch(`/api/lists`);
+      if (!response.ok) {
+        throw new Error('Request failed');
+      }
+      const data = await response.json();
+      
+      const listsArray = await Promise.all(data.lists.map(async(list, index) => {
+        const numberOfIds = list.ids.length;
+        const ids = list.ids;
+        const heroesInfo = await Promise.all(ids.map(async(i)=>{
+          const hero = await getHero(i);
+          const powers = await getPowers(i);
+          console.log('name: ' + hero.name);
+          return (
+            <p key ={i}> 
+            Name: {hero.name}, Powers: {powers.powers === 'No Powers' ? 'None' : powers.length > 1 ? powers.powers.join(', ') : powers.powers}, Publisher: {hero.Publisher}</p>
+          );
+        }));
+        console.log('ids: ' + ids);
+        return (
+          <div key={index}>
+            <li key={index} name={list.name} nickname={list.creatorNickname}>
+              <strong style={{ color: '#007acc' }}>{list.name} </strong>
+              <br />
+              <span style={{ fontSize: '14px' }}>Creator: {list.creatorNickname}, # of Heroes: {numberOfIds}</span>
+              <span className="dropdownArrow" onClick={(event) => toggleDropdownPublic(event, index)}>
+                ▼
+              </span>
+              {publicListsDropDown[index] && (
+                <div className="dropdownContent">
+                  <span>
+                    Description: {list.description}, Heroes:
+                  </span>
+                  <span>{heroesInfo}</span>
+                  <button onClick={()=>displayList(list.name)}>Display Heroes Info</button>
+                </div>
+              )}
+            </li>
+          </div>
+        );
+      }));
+      return listsArray;
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
   
   // Function to handle dropdown click
   const toggleDropdown = (event, index) => {
@@ -608,6 +679,16 @@ function LoggedInUser() {
     event.preventDefault();
     searchSuperheroes();
   };
+
+     // Function to handle dropdown click for public lists
+     const toggleDropdownPublic = (event, index) => {
+      event.stopPropagation();
+      setPublicListsDropDown((prevStates) => {
+        const newStates = [...prevStates];
+        newStates[index] = !newStates[index];
+        return newStates;
+      });
+    }
   
   //logs user out
   const logOut = async () => {
@@ -751,11 +832,7 @@ function LoggedInUser() {
         <div id="publicLists">
         <h2>Public Lists</h2>
         <div id="publicListsResults">
-          <ul>
-        {favoriteLists.map((listName) => (
-                    <li key={listName}>{listName} </li>
-                  ))}
-          </ul>
+        {<ul>{publicLists}</ul>}
         </div>
         </div>
     </div>

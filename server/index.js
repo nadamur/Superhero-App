@@ -26,6 +26,14 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true, useCr
   .catch((err) => console.log(err));
 
 //required functions
+// Function to parse the date string
+const parseDate = (dateString) => {
+    const [datePart, timePart] = dateString.split(' ');
+    const [month, day, year] = datePart.split('-');
+    const [hours, minutes, seconds] = timePart.split(':');
+    return new Date(`20${year}`, month - 1, day, hours, minutes, seconds);
+  };
+
 //function returns current date in required format
 function getCurrentFormattedDateTime() {
     const currentDate = new Date();
@@ -241,6 +249,7 @@ app.get('/api/search/:pattern/:field?/:n', (req, res) => {
 //lists created are private by default
 //this method will create a list with a list name and returns an error if the name already exists
 app.post('/api/lists/:listName', (req, res) => {
+    const nickname = req.session.user.nickname;
     const email = req.session.user.email;
     const listName = req.params.listName;
       //now add the list to the file with default values
@@ -256,6 +265,7 @@ app.post('/api/lists/:listName', (req, res) => {
                 const newEntry ={
                     name: listName,
                     creator: email,
+                    creatorNickname: nickname,
                     ids: [],
                     ratings: [],
                     comments: [],
@@ -279,6 +289,7 @@ app.post('/api/lists/:listName', (req, res) => {
             const initialData = [{
                 name: listName,
                 creator: email,
+                creatorNickname: nickname,
                 ids:[],
                 ratings: [],
                 comments: [],
@@ -632,6 +643,40 @@ app.put('/api/lists/details/visibility/:listName', (req, res) => {
         }
       });
 });
+
+//returns up to 10 public lists with the list name, the creator nickname, the ids, the description, and the ratings, ordered by lastModified date
+app.get('/api/lists', (req,res)=>{
+    fs.readFile(heroLists, 'utf-8', (err, data) => {
+        if (err) {
+        console.error('Error reading JSON file:', err);
+        res.status(500).json({ error: 'Internal server error' });
+        return;
+        }
+        try {
+        const jsonData = JSON.parse(data);
+        const publicLists = jsonData.filter(list => list.visibility === "Public");
+
+        const sortedLists = publicLists.sort((a, b) => {
+            const dateA = parseDate(a.lastModified);
+            const dateB = parseDate(b.lastModified);
+            return dateB - dateA;
+        });
+        const sortListsLimited = sortedLists.slice(0,10);
+        if (sortListsLimited) {
+            res.json({ lists: sortListsLimited });
+            return;
+        } else {
+            res.status(404).json({ error: 'No lists found' });
+            return;
+        }
+        } catch (parseError) {
+        console.error('Error parsing JSON data:', parseError);
+        res.status(500).json({ error: 'Error parsing JSON data' });
+        return;
+        }
+    });
+})
+
 
 //delete a hero from a list
 app.put('/api/lists/delete/hero/:listNameAndIds', (req, res) => {

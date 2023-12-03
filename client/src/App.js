@@ -6,10 +6,12 @@ import LogIn from './LogIn.js';
 import SignUp from './SignUp.js';
 import LoggedInUser from './LoggedInUser.js';
 import ListInfo from './FavListInfo.js';
+import ListDisplay from './ListDisplay.js';
 import { useAuth, AuthProvider } from './authContext';
 
 
 function App() {
+  const navigate = useNavigate();
   const [DDGURL,setDDGURL] = useState('');
   //authentication, defaults to false
   const [logInStatus, setLogInStatus] = useState("");
@@ -27,12 +29,24 @@ function App() {
   //drop down
   const [dropdownStates, setDropdownStates] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  //public lists
+  const [publicLists, setPublicLists] = useState([]);
+  const [publicListsDropDown, setPublicListsDropDown] = useState([]);
   useEffect(() => {
     checkAuthentication();
     //displays search results
     displaySearch();
+    //displays public lists
+    displayPublicLists();
   }, [searchResults]);
 
+  useEffect(() => {
+    const fetchLists = async () => {
+        const listsArray = await displayPublicLists();
+        setPublicLists(listsArray);
+      };
+      fetchLists();
+  }, [publicListsDropDown]);
   
   //check authentication
   const checkAuthentication = async () => {
@@ -45,12 +59,62 @@ function App() {
         const data = await response.json();
         //when it receives data, sets logInStatus to true or false depending on response
        setLogInStatus(data.loggedIn);
-       console.log(logInStatus);
       }
     } catch (error) {
       console.error('Error:', error);
     }
   };
+
+    //function to display public lists
+    const displayPublicLists = async () =>{
+      try {
+        const response = await fetch(`/api/lists`);
+        if (!response.ok) {
+          throw new Error('Request failed');
+        }
+        const data = await response.json();
+        
+        const listsArray = await Promise.all(data.lists.map(async(list, index) => {
+          const numberOfIds = list.ids.length;
+          const ids = list.ids;
+          const heroesInfo = await Promise.all(ids.map(async(i)=>{
+            const hero = await getHero(i);
+            const powers = await getPowers(i);
+            console.log('name: ' + hero.name);
+            return (
+              <p key ={i}> 
+              Name: {hero.name}, Powers: {powers.powers === 'No Powers' ? 'None' : powers.length > 1 ? powers.powers.join(', ') : powers.powers}, Publisher: {hero.Publisher}</p>
+            );
+          }));
+          console.log('ids: ' + ids);
+          return (
+            <div key={index}>
+              <li key={index} name={list.name} nickname={list.creatorNickname}>
+                <strong style={{ color: '#007acc' }}>{list.name} </strong>
+                <br />
+                <span style={{ fontSize: '14px' }}>Creator: {list.creatorNickname}, # of Heroes: {numberOfIds}</span>
+                <span className="dropdownArrow" onClick={(event) => toggleDropdownPublic(event, index)}>
+                  ▼
+                </span>
+                {publicListsDropDown[index] && (
+                  <div className="dropdownContent">
+                    <span>
+                      Description: {list.description}, Heroes:
+                    </span>
+                    <span>{heroesInfo}</span>
+                    <button onClick={()=>displayList(list.name)}>Display Heroes Info</button>
+                  </div>
+                )}
+              </li>
+            </div>
+          );
+        }));
+        return listsArray;
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+  
 
   //function to get all hero info
   const getHero = async (id) => {
@@ -251,11 +315,19 @@ function App() {
   };
 
 
+    //display list info
+    const displayList = (name)=>{
+      const n = name;
+      navigate(`/listDisplay/${n}`);
+    }
+
+
   //gives heroes attributes and pushes them to search results
   const displayHeroes = async () => {
     for (const i of searchResultIds) {
       const hero = await getHero(i);
       const powers = await getPowers(i);
+      console.log(powers.powers);
       const heroAttributes = Object.entries(hero)
         .filter(([key]) => key !== 'id') // exclude the "id" property
         .map(([key, value]) => (
@@ -316,7 +388,7 @@ function App() {
   //   login();
   // }
 
-  // Function to handle dropdown click
+  // Function to handle dropdown click for search results
   const toggleDropdown = (event, index, heroName, heroPublisher) => {
     event.stopPropagation();
     setDropdownStates((prevStates) => {
@@ -326,6 +398,16 @@ function App() {
     });
     setDDGURL(`https://duckduckgo.com/?q=${heroName},${heroPublisher}&va=d&t=hh&ia=web`);
   };
+
+    // Function to handle dropdown click for public lists
+    const toggleDropdownPublic = (event, index) => {
+      event.stopPropagation();
+      setPublicListsDropDown((prevStates) => {
+        const newStates = [...prevStates];
+        newStates[index] = !newStates[index];
+        return newStates;
+      });
+    }
 
   //display search results on every change
   const displaySearch = () => {
@@ -356,7 +438,8 @@ function App() {
                   Height: {item.props.height}, 
                   Skin colour: {item.props.skin}, 
                   Alignment: {item.props.alignment}, 
-                  Weight: {item.props.weight}
+                  Weight: {item.props.weight},
+                  Powers: {item.props.power === 'No Powers' ? 'None' : item.props.power.length > 1 ? item.props.power.join(', ') : item.props.power}
                   </span>
                   <a id = "DDGButton" href= {DDGURL} target="_blank" rel="noopener noreferrer" >Search on DDG</a>
                 </div>
@@ -370,121 +453,107 @@ function App() {
   };
 
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<LogIn/>} />
-          <Route path="/signup" element={<SignUp/>} />
-          <Route path="/loggedin" element={<LoggedInUser />} />
-          <Route path="/listInfo/:listName" element={<ListInfo/>}/>
-          
-          <Route
-            path="/"
-            element={
-              
-              <div id="container">
-                <nav>
-                  <ul className="nav-links">
-                    <li>
-                      <Link to = "/login" className="nav-button">Log In</Link>
-                    </li>
-                    <li>
-                      <Link to="/signup" className="nav-button">Sign Up</Link>
-                    </li>
-                  </ul>
-                </nav>
-                <h1>SuperHeroes Hub</h1>
-                <div id="topSection">
-                  {/* Top Left: Search Superheroes */}
-                  <div id="searchSuperheroes">
-                  <h2>Search Superheroes</h2>
-                  <form id="searchForm" onSubmit={handleSearch}>
-                  <div className="searchInputContainer">
-                      <label htmlFor="nameInput">Name:</label>
-                      <input
-                      type="text"
-                      id="nameInput"
-                      value={nameInput}
-                      onChange={(e) => setNameInput(e.target.value)}
-                      placeholder="Search by name . . ."
-                      />
-                      </div>
-                      <div className="searchInputContainer">
-                      <label htmlFor="raceInput">Race:</label>
-                      <input
-                      type="text"
-                      id="raceInput"
-                      value={raceInput}
-                      onChange={(e) => setRaceInput(e.target.value)}
-                      placeholder="Search by race . . ."
-                      />
-                      </div>
-                      <div className="searchInputContainer">
-                      <label htmlFor="publisherInput">Publisher:</label>
-                      <input
-                      type="text"
-                      id="publisherInput"
-                      value={publisherInput}
-                      onChange={(e) => setPublisherInput(e.target.value)}
-                      placeholder="Search by publisher . . ."
-                      />
-                      </div>
-                      <div className="searchInputContainer">
-                      <label htmlFor="powerInput">Power:</label>
-                      <input
-                      type="text"
-                      id="powerInput"
-                      value={powerInput}
-                      onChange={(e) => setPowerInput(e.target.value)}
-                      placeholder="Search by power . . ."
-                      />
-                    </div>
-                    <button type="submit" id="searchButton">
-                    Search
-                    </button>
-                  </form>
-                
-                  </div>
+    
+      <div id="container">
+        <nav>
+          <ul className="nav-links">
+            <li>
+              <Link to = "/login" className="nav-button">Log In</Link>
+            </li>
+            <li>
+              <Link to="/signup" className="nav-button">Sign Up</Link>
+            </li>
+          </ul>
+        </nav>
+        <h1>SuperHeroes Hub</h1>
+        <div id="topSection">
+          {/* Top Left: Search Superheroes */}
+          <div id="searchSuperheroes">
+          <h2>Search Superheroes</h2>
+          <form id="searchForm" onSubmit={handleSearch}>
+          <div className="searchInputContainer">
+              <label htmlFor="nameInput">Name:</label>
+              <input
+              type="text"
+              id="nameInput"
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
+              placeholder="Search by name . . ."
+              />
+              </div>
+              <div className="searchInputContainer">
+              <label htmlFor="raceInput">Race:</label>
+              <input
+              type="text"
+              id="raceInput"
+              value={raceInput}
+              onChange={(e) => setRaceInput(e.target.value)}
+              placeholder="Search by race . . ."
+              />
+              </div>
+              <div className="searchInputContainer">
+              <label htmlFor="publisherInput">Publisher:</label>
+              <input
+              type="text"
+              id="publisherInput"
+              value={publisherInput}
+              onChange={(e) => setPublisherInput(e.target.value)}
+              placeholder="Search by publisher . . ."
+              />
+              </div>
+              <div className="searchInputContainer">
+              <label htmlFor="powerInput">Power:</label>
+              <input
+              type="text"
+              id="powerInput"
+              value={powerInput}
+              onChange={(e) => setPowerInput(e.target.value)}
+              placeholder="Search by power . . ."
+              />
+            </div>
+            <button type="submit" id="searchButton">
+            Search
+            </button>
+          </form>
+        
+          </div>
 
-                  {/* Top Right: Favorite Lists */}
-                  <div id="AboutUs">
-                  <h2>About Us</h2>
-                  <p>Welcome to the SuperHeroes Hub, your go-to platform for exploring and organizing information about your favourite superheroes! Discover a vast database, create personalized lists, and engage in a vibrant community. With features like advanced search, user-created lists, and reviews, our app caters to both casual fans and dedicated enthusiasts. Dive into the world of superheroes with confidence, knowing that our system ensures a secure and respectful environment. Explore, connect, and unleash your superhero knowledge with the Superheroes App!</p>
-                  </div>
-              </div>
-              <div id="bottomSection">
-              {/* Bottom Left: Sort List */}
-                  <div id="sortList">
-                  <h2>Heroes <span id="listName"></span></h2>
-                  <div id="resultsContainer">
-                  <button id="sortByName" onClick={() => { sortResults('name') }}>Sort by Name</button>
-                  <button id="sortByRace" onClick={() => { sortResults('race') }}>Sort by Race</button>
-                  <button id="sortByPublisher" onClick={() => { sortResults('publisher') }}>Sort by Publisher</button>
-                  <button id="sortByPower" onClick={() => { sortResults('power') }}>Sort by Power</button>
-                  {/* Display Search Results */}
-                  <div id="searchResults">
-                  <p>{errorMessage}</p>
-                  {displaySearch()}
-                  </div>
-                  </div>
-                  </div>
-                  {/* Bottom Right: Favorite Heroes */}
-                  <div id="publicLists">
-                  <h2>Public Lists</h2>
-                  <div id="publicListsResults">
-                  {/* {favoriteLists.map((listName) => (
-                    <ul key={listName}>{listName} </ul>
-                  ))} */}
-                  </div>
-                  </div>
-              </div>
-                <script src="script.js"></script>
-              </div>
-            }
-          />
-        </Routes>
-      </Router>
-    </AuthProvider>
+          {/* Top Right: Favorite Lists */}
+          <div id="AboutUs">
+          <h2>About Us</h2>
+          <p>Welcome to the SuperHeroes Hub, your go-to platform for exploring and organizing information about your favourite superheroes! Discover a vast database, create personalized lists, and engage in a vibrant community. With features like advanced search, user-created lists, and reviews, our app caters to both casual fans and dedicated enthusiasts. Dive into the world of superheroes with confidence, knowing that our system ensures a secure and respectful environment. Explore, connect, and unleash your superhero knowledge with the Superheroes App!</p>
+          </div>
+      </div>
+      <div id="bottomSection">
+      {/* Bottom Left: Sort List */}
+          <div id="sortList">
+          <h2>Heroes <span id="listName"></span></h2>
+          <div id="resultsContainer">
+          <button id="sortByName" onClick={() => { sortResults('name') }}>Sort by Name</button>
+          <button id="sortByRace" onClick={() => { sortResults('race') }}>Sort by Race</button>
+          <button id="sortByPublisher" onClick={() => { sortResults('publisher') }}>Sort by Publisher</button>
+          <button id="sortByPower" onClick={() => { sortResults('power') }}>Sort by Power</button>
+          {/* Display Search Results */}
+          <div id="searchResults">
+          <p>{errorMessage}</p>
+          {displaySearch()}
+          </div>
+          </div>
+          </div>
+          {/* Bottom Right: Favorite Heroes */}
+          <div id="publicLists">
+          <h2>Public Lists</h2>
+          <div id="publicListsResults">
+          {<ul>{publicLists}</ul>}
+          {/* {favoriteLists.map((listName) => (
+            <ul key={listName}>{listName} </ul>
+          ))} */}
+          </div>
+          </div>
+      </div>
+        <script src="script.js"></script>
+      </div>
+            
   );
 }
 
