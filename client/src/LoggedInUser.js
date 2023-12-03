@@ -9,7 +9,9 @@ import SignUp from './SignUp.js';
 
 function LoggedInUser() {
   //authentication
-  const {isAuthenticated, login, logout} = useAuth();
+  //const {isAuthenticated, login, logout} = useAuth();
+  const [logInStatus, setLogInStatus] = useState("");
+  const navigate = useNavigate();
   //search related
   const [raceInput, setRaceInput] = useState('');
   const [nameInput, setNameInput] = useState('');
@@ -37,7 +39,6 @@ function LoggedInUser() {
 
   useEffect(() => {
     checkAuthentication();
-    console.log('updating');
     //sets favorite lists from back end
     getFavLists();
     //displays search results
@@ -45,24 +46,52 @@ function LoggedInUser() {
     //sets up initial values
     setListNameToAdd(favoriteLists.length > 0 ? favoriteLists[0] : '');
     setListNameToDelete(favoriteLists.length > 0 ? favoriteLists[0] : '');
-  }, [searchResults, listNameToAdd, favoriteLists,selectedResults]);
+  }, [searchResults, favoriteLists]);
 
 
-  //function to check authentication
+  //check authentication
   const checkAuthentication = async () => {
+    let tempLogInStatus = "";
     try {
-      // Make a request to your backend to check authentication
-      const response = await fetch('/api/check-auth');
-      if (response.ok) {
-        login();
-      } else {
-        logout();
+      const response = await fetch(`/login`);
+      if (!response.ok) {
+        //if no heroes found, displays message
+        console.log("Error fetching log in status");
+      }else{
+        const data = await response.json();
+        //when it receives data, sets logInStatus to true or false depending on response
+        tempLogInStatus = data.loggedIn;
+        setLogInStatus(tempLogInStatus);
+        if(!tempLogInStatus){     
+          navigate("/login");
+        }
       }
     } catch (error) {
-      console.error('Error checking authentication:', error);
-      logout();
+      console.error('Error:', error);
     }
   };
+
+  const test = async ()=>{
+    try {
+      const response = await fetch(`/test`, {
+        headers:{
+          "x-access-token":localStorage.getItem("token")
+        }
+      });
+      if (!response.ok) {
+        //if no heroes found, displays message
+        console.log("Error fetching log in status");
+      }else{
+        const data = await response.json();
+        //when it receives data, sets logInStatus to true or false depending on response
+        if(data){
+          console.log(data.loggedIn);
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
 
   //function to add selected items to a fav list
   const addSelectedHeroesToList= async (event) =>{
@@ -694,6 +723,7 @@ function LoggedInUser() {
     <div id="footer">
         <label htmlFor="FAQ">FAQ: What Publishers are available</label>
         <button id="FAQ" onClick={() => { displayPublishers() }}>Available Publishers</button>
+        <button onClick={test}>Test</button>
     </div>
     <script src="script.js"></script>
     </div>

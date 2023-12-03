@@ -3,15 +3,16 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from './authContext';
 
-function LogIn({authenticationComplete}) {
+function LogIn({}) {
   //authentication
-  const {isAuthenticated, login, logout} = useAuth();
+  //const {isAuthenticated, login, logout} = useAuth();
   //user info
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   //errors
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [logInStatus, setLogInStatus] = useState("");
   const navigate = useNavigate();
   const logIn = async ()=>{
     try {
@@ -33,8 +34,7 @@ function LogIn({authenticationComplete}) {
           setPasswordError('');
         }
       }else{
-        authenticationComplete();
-        login();
+        localStorage.setItem("token", data.token);
         navigate('/loggedin');
       }
     }
@@ -46,24 +46,23 @@ function LogIn({authenticationComplete}) {
   //check authentication
   const checkAuthentication = async () => {
     try {
-      // Make a request to your backend to check authentication
-      const response = await fetch('/api/check-auth');
-      if (response.ok) {
-        login();
-      } else {
-        logout();
+      const response = await fetch(`/login`);
+      if (!response.ok) {
+        //if no heroes found, displays message
+        console.log("No race results");
+      }else{
+        const data = await response.json();
+        console.log(data);
       }
     } catch (error) {
-      console.error('Error checking authentication:', error);
-      logout();
+      console.error('Error:', error);
     }
   };
 
   //this will run when the authentication goes through
   useEffect(() => {
     checkAuthentication();
-    console.log('authenticated login: ' + isAuthenticated);
-  }, [isAuthenticated]);
+  }, []);
   
   return (
     <div>

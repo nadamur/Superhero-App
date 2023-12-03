@@ -11,7 +11,8 @@ import { useAuth, AuthProvider } from './authContext';
 function App() {
   const [DDGURL,setDDGURL] = useState('');
   //authentication, defaults to false
-  const {isAuthenticated, login, logout} = useAuth();
+  const [logInStatus, setLogInStatus] = useState("");
+  //const {isAuthenticated, login, logout} = useAuth();
   //search related
   const [raceInput, setRaceInput] = useState('');
   const [nameInput, setNameInput] = useState('');
@@ -32,20 +33,21 @@ function App() {
   }, [searchResults]);
 
   
-  //function to check authentication
+  //check authentication
   const checkAuthentication = async () => {
     try {
-      // Make a request to your backend to check authentication
-      const response = await fetch('/api/check-auth');
-      if (response.ok) {
-        login();
-        console.log(isAuthenticated);
-      } else {
-        logout();
+      const response = await fetch(`/login`);
+      if (!response.ok) {
+        //if no heroes found, displays message
+        console.log("Error fetching log in status");
+      }else{
+        const data = await response.json();
+        //when it receives data, sets logInStatus to true or false depending on response
+       setLogInStatus(data.loggedIn);
+       console.log(logInStatus);
       }
     } catch (error) {
-      console.error('Error checking authentication:', error);
-      logout();
+      console.error('Error:', error);
     }
   };
 
@@ -309,9 +311,9 @@ function App() {
   };
 
   //if LogIn page notifies us that login was successful, change 'isAuthenticated' to true immediately to allow access to main page
-  const loggedIn = () =>{
-    login();
-  }
+  // const loggedIn = () =>{
+  //   login();
+  // }
 
   // Function to handle dropdown click
   const toggleDropdown = (event, index, heroName, heroPublisher) => {
@@ -370,9 +372,9 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/login" element={<LogIn on authenticationComplete={loggedIn}/>} />
-          <Route path="/signup" element={<SignUp on authenticationComplete={loggedIn}/>} />
-          <Route path="/loggedin" element={isAuthenticated ? <LoggedInUser /> : <Navigate to="/login"/>} />
+          <Route path="/login" element={<LogIn/>} />
+          <Route path="/signup" element={<SignUp/>} />
+          <Route path="/loggedin" element={<LoggedInUser />} />
           
           <Route
             path="/"
