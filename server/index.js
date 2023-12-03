@@ -262,9 +262,9 @@ app.post('/api/lists/:listName', (req, res) => {
                     nicknames: [],
                     status: [],
                     reviewDate: [],
-                    visibility: "private",
+                    visibility: "Private",
                     lastModified: getCurrentFormattedDateTime(),
-                    descripton:""
+                    description:""
                 };
                 jsonData.push(newEntry);
                 fs.writeFileSync(heroLists, JSON.stringify(jsonData, null, 2), 'utf8');
@@ -285,9 +285,9 @@ app.post('/api/lists/:listName', (req, res) => {
                 nicknames: [],
                 status: [],
                 reviewDate: [],
-                visibility: "private",
+                visibility: "Private",
                 lastModified: getCurrentFormattedDateTime(),
-                descripton:""
+                description:""
             }];
             fs.writeFile(heroLists, JSON.stringify(initialData, null, 2), 'utf-8', (writeErr) => {
                 if (writeErr) {
@@ -387,8 +387,9 @@ app.get('/api/lists/info/:listName', (req, res) => {
             //if the name does exist, return all info
             const list = jsonData.find(list => list.name === listName);
             if(list){
-                const {ids, visibility, lastModified, descripton} = list;
-                res.json({ids, visibility, lastModified, descripton});
+                console.log(list.description);
+                const {ids, visibility, lastModified, description} = list;
+                res.json({ids, visibility, lastModified, description});
                 return;
             }else{
                 //if it doesnt exist, send an error
@@ -404,10 +405,11 @@ app.get('/api/lists/info/:listName', (req, res) => {
 });
 
 //save edited list with changes
-//editing manually will affect visibility, description, ids, lastModified
+//editing manually will affect visibility, description, lastModified
+//ids will be deleted manually one at a time
 //lastModified changes automatically
 app.put('/api/lists/info/:listName', (req, res) => {
-    const { ids, visibility, descripton } = req.body;
+    const { visibility, description } = req.body;
     const listName = req.params.listName;
     fs.readFile(heroLists, 'utf-8', (err, data) => {
         if (err) {
@@ -421,10 +423,9 @@ app.put('/api/lists/info/:listName', (req, res) => {
             const list = jsonData.find(l=>l.name ===listName);
             //if found
             if(list){
-                list.ids = ids
                 list.visibility = visibility;
                 list.lastModified = getCurrentFormattedDateTime();
-                list.descripton = descripton;
+                list.description = description;
                 //write into file
                 fs.writeFileSync(heroLists, JSON.stringify(jsonData, null, 2), 'utf8');
                 res.status(200).json({ message: 'List info updated' });
@@ -583,7 +584,7 @@ app.put('/api/lists/details/reviews/:listName', (req, res) => {
                 list.ratings.push(rating);
                 list.comments.push(comment);
                 list.nicknames.push(nickname);
-                list.status.push("public");
+                list.status.push("Public");
                 list.reviewDate.push(getCurrentFormattedDateTime());
                 // write the modified data back to the file
                 fs.writeFileSync(heroLists, JSON.stringify(jsonData, null, 2), 'utf8');
@@ -620,6 +621,46 @@ app.put('/api/lists/details/visibility/:listName', (req, res) => {
                 fs.writeFileSync(heroLists, JSON.stringify(jsonData, null, 2), 'utf8');
                 console.log('Ratings updated');
                 res.status(200).json({ message: 'Ratings updated' });
+            }else{
+                console.log("List not found");
+                res.status(404).json({ error: 'List not found' });
+            }
+        }
+        catch(error){
+            console.error('Error parsing JSON data:', error);
+            res.status(500).json({ error: 'Error parsing JSON data' });
+        }
+      });
+});
+
+//delete a hero from a list
+app.put('/api/lists/delete/hero/:listNameAndIds', (req, res) => {
+    const listName = req.params.listNameAndIds;
+    console.log(listName);
+    // assuming we are receiving the URL in the format: /api/lists/visibility/myList?id=1
+    const id = req.query.id;
+    fs.readFile(heroLists, 'utf-8', (err, data) => {
+        if (err) {
+          console.error('Error reading JSON file:', err);
+          res.status(500).json({ error: 'Internal server error' });
+        }
+        try{
+            const jsonData = JSON.parse(data);
+            //find specific list
+            const list = jsonData.find(l => l.name === listName);
+            //if found
+            if (list){
+                const indexToDelete = list.ids.indexOf(id);
+                if (indexToDelete !== -1){
+                    list.ids.splice(indexToDelete,1);
+                    // write the modified data back to the file
+                    fs.writeFileSync(heroLists, JSON.stringify(jsonData, null, 2), 'utf8');
+                    console.log('Id deleted');
+                    res.status(200).json({ message: 'Id deleted' });
+                }else{
+                    res.status(404).json({message: "Hero not found"});
+                }
+                
             }else{
                 console.log("List not found");
                 res.status(404).json({ error: 'List not found' });

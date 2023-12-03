@@ -8,9 +8,9 @@
     "nicknames": [],
     "status": [],
     "reviewDate": [],
-    "visibility": "private",
+    "visibility": "Private",
     "lastModified": "03-12-23 02:43:28",
-    "descripton": ""
+    "description": ""
   },
   {
     "name": "list2",
@@ -26,9 +26,9 @@
     "nicknames": [],
     "status": [],
     "reviewDate": [],
-    "visibility": "private",
+    "visibility": "Private",
     "lastModified": "03-12-23 02:43:35",
-    "descripton": ""
+    "description": ""
   },
   {
     "name": "list3",
@@ -39,25 +39,26 @@
     "nicknames": [],
     "status": [],
     "reviewDate": [],
-    "visibility": "private",
+    "visibility": "Public",
     "lastModified": "03-12-23 02:43:39",
-    "descripton": ""
+    "description": ""
   },
   {
     "name": "listt",
     "creator": "new@gmail.com",
     "ids": [
-      "0",
-      "2"
+      "1",
+      "2",
+      "4"
     ],
     "ratings": [],
     "comments": [],
     "nicknames": [],
     "status": [],
     "reviewDate": [],
-    "visibility": "private",
-    "lastModified": "03-12-23 03:23:05",
-    "descripton": ""
+    "visibility": "Private",
+    "lastModified": "03-12-23 06:11:10",
+    "description": "new description"
   },
   {
     "name": "list2",
@@ -68,8 +69,8 @@
     "nicknames": [],
     "status": [],
     "reviewDate": [],
-    "visibility": "private",
+    "visibility": "Private",
     "lastModified": "03-12-23 04:04:38",
-    "descripton": ""
+    "description": ""
   }
 ]

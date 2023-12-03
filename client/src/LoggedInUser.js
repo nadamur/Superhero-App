@@ -628,8 +628,8 @@ function LoggedInUser() {
 
   //test
   const test = ()=>{
-    const name = 'testName'
-    navigate(`/listInfo/:${name}`);
+    const name = favoriteLists[0];
+    navigate(`/listInfo/${name}`);
   }
 
   return (

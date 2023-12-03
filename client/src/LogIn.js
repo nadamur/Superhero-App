@@ -43,26 +43,25 @@ function LogIn() {
     }
   }
 
-  //check authentication
-  const checkAuthentication = async () => {
-    try {
-      const response = await fetch(`/login`);
-      if (!response.ok) {
-        //if no heroes found, displays message
-        console.log("No race results");
-      }else{
-        const data = await response.json();
-        console.log(data);
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
+  // //check authentication
+  // const checkAuthentication = async () => {
+  //   try {
+  //     const response = await fetch(`/login`);
+  //     if (!response.ok) {
+  //       //if no heroes found, displays message
+  //       console.log("No race results");
+  //     }else{
+  //       const data = await response.json();
+  //     }
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //   }
+  // };
 
-  //this will run when the authentication goes through
-  useEffect(() => {
-    checkAuthentication();
-  }, []);
+  // //this will run when the authentication goes through
+  // useEffect(() => {
+  //   checkAuthentication();
+  // }, []);
   
   return (
     <div>

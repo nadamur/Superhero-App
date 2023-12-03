@@ -44,12 +44,18 @@ h2 {
   border-radius: 5px;
 }
 
+#deleteButton{
+  padding:5px;
+}
+
+#heroResults ul,
 #publicListsResults ul,
 #searchResults ul {
   list-style-type: none;
   padding: 0;
 }
 
+#heroResults ul li,
 #publicListsResults ul li,
 #searchResults ul li {
   text-align: center;
@@ -416,4 +422,39 @@ h1{
 #DDGButton:hover{
   color: white;
   background-color: #007acc;
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+  margin: 20px;
+}
+
+.slider {
+  margin-left: 110px;
+  width: 100px;
+  height: 50px;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.slide-right {
+  transform: translateX(-100%);
+}
+
+.option {
+  border-radius: 10px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color:white;
+  background-color:rgb(194, 75, 194);
+}
+
+.slider-button {
+  margin-left: 10px;
+  cursor: pointer;
 }
