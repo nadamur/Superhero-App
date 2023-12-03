@@ -47,10 +47,6 @@ function LoggedInUser() {
     checkUser();
   },[])
 
-  //selection
-  useEffect(()=>{
-    console.log("results: " + selectedResults);
-  },[selectedResults]);
 
 
   //runs when user is successfully logged in in order to find appropriate list names
@@ -124,7 +120,6 @@ function LoggedInUser() {
   //function to add selected items to a fav list
   const addSelectedHeroesToList= async (event) =>{
     event.preventDefault();
-    console.log('selected results: ' + selectedResults);
     const url = `/api/lists/add/${listNameToAdd}?ids=${selectedResults}`;
     try{
       const response = await fetch(url, {
@@ -210,7 +205,6 @@ function LoggedInUser() {
   const selectResults = (event) => {
     event.preventDefault();
     const listItem = event?.target?.closest('li');
-    console.log('id: ' + listItem.id);
     if (listItem) {
       const id = listItem.id;
       setSelectedResults((prevSelectedResults) => {
@@ -329,7 +323,7 @@ function LoggedInUser() {
   //display list info
   const displayList = (name)=>{
     const n = name;
-    navigate(`/listDisplay/${n}`);
+    navigate(`/listDisplayAndReview/${n}`);
   }
 
   //function to get all hero powers
@@ -573,13 +567,11 @@ function LoggedInUser() {
         const heroesInfo = await Promise.all(ids.map(async(i)=>{
           const hero = await getHero(i);
           const powers = await getPowers(i);
-          console.log('name: ' + hero.name);
           return (
             <p key ={i}> 
             Name: {hero.name}, Powers: {powers.powers === 'No Powers' ? 'None' : powers.length > 1 ? powers.powers.join(', ') : powers.powers}, Publisher: {hero.Publisher}</p>
           );
         }));
-        console.log('ids: ' + ids);
         return (
           <div key={index}>
             <li key={index} name={list.name} nickname={list.creatorNickname}>

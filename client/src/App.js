@@ -80,13 +80,11 @@ function App() {
           const heroesInfo = await Promise.all(ids.map(async(i)=>{
             const hero = await getHero(i);
             const powers = await getPowers(i);
-            console.log('name: ' + hero.name);
             return (
               <p key ={i}> 
               Name: {hero.name}, Powers: {powers.powers === 'No Powers' ? 'None' : powers.length > 1 ? powers.powers.join(', ') : powers.powers}, Publisher: {hero.Publisher}</p>
             );
           }));
-          console.log('ids: ' + ids);
           return (
             <div key={index}>
               <li key={index} name={list.name} nickname={list.creatorNickname}>
@@ -327,7 +325,6 @@ function App() {
     for (const i of searchResultIds) {
       const hero = await getHero(i);
       const powers = await getPowers(i);
-      console.log(powers.powers);
       const heroAttributes = Object.entries(hero)
         .filter(([key]) => key !== 'id') // exclude the "id" property
         .map(([key, value]) => (

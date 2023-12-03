@@ -2,20 +2,24 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-function ListDisplay() {
+function ListDisplayLoggedIn() {
     //name of list being edited
     const {listName} = useParams();
     //list details
     const [ids, setIds] = useState([]);
     const [heroes, setHeroes] = useState([]);
     const [info, setInfo] = useState([]);
+    //review
+    const [rating, setRating] = useState('');
+    const [comment, setComment] = useState('');
 
     const navigate = useNavigate();
 
     //make sure user is authenticated, get their info
     useEffect(() => {
+      console.log('raing: ' + rating);
       getListInfo();
-    }, []);
+    }, [rating]);
 
     useEffect(() => {
         const fetchHeroes = async () => {
@@ -122,9 +126,21 @@ function ListDisplay() {
         {info.length > 0 && <ul>{info}</ul>}
         </ul>
     </div>
+    <div id="searchResults">
+        <h2>Add a Review</h2>
+        <label htmlFor="ratingInput">Rating: </label>
+            <select
+              id="listNamesToDelete"
+              onChange={(event) => setRating(event.target.value)}/>
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+    </div>
     </div>
     
   );
 }
 
-export default ListDisplay;
+export default ListDisplayLoggedIn;
