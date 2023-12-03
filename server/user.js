@@ -4,10 +4,10 @@ const bcrypt = require('bcrypt');
 
 //defining user schema
 const userSchema = new mongoose.Schema({
-    username:{
+    nickname:{
         type: String,
         //if no username entered, returns string
-        required:[true, 'Please enter a username']
+        required:[true, 'Please enter a nickname']
     },
     email: {
         type: String,
@@ -19,6 +19,14 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: [true, 'Please enter a password'],
+    },
+    status:{
+      type: String,
+      default: 'enabled'
+    },
+    verificiation:{
+      type: String,
+      default: 'unverified'
     }
 });
 

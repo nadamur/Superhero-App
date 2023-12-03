@@ -9,8 +9,9 @@ import SignUp from './SignUp.js';
 
 function LoggedInUser() {
   //authentication
-  //const {isAuthenticated, login, logout} = useAuth();
   const [logInStatus, setLogInStatus] = useState("");
+  const [loggedInNickname, setLoggedInNickname] = useState("");
+  const [loggedInEmail, setLoggedInEmail] = useState("");
   const navigate = useNavigate();
   //search related
   const [raceInput, setRaceInput] = useState('');
@@ -37,8 +38,14 @@ function LoggedInUser() {
   const [dropdownStates, setDropdownStates] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  useEffect(() => {
+  //useEffect to make sure the user is authenticated and check logged in user, only runs at mount
+  useEffect(()=>{
     checkAuthentication();
+    checkUser();
+  },[])
+
+  //runs when user is successfully logged in in order to find appropriate list names
+  useEffect(() => {
     //sets favorite lists from back end
     getFavLists();
     //displays search results
@@ -46,7 +53,7 @@ function LoggedInUser() {
     //sets up initial values
     setListNameToAdd(favoriteLists.length > 0 ? favoriteLists[0] : '');
     setListNameToDelete(favoriteLists.length > 0 ? favoriteLists[0] : '');
-  }, [searchResults, favoriteLists]);
+  }, [searchResults, favoriteLists, logInStatus]);
 
 
   //check authentication
@@ -71,9 +78,10 @@ function LoggedInUser() {
     }
   };
 
-  const test = async ()=>{
+  //check current user
+  const checkUser = async ()=>{
     try {
-      const response = await fetch(`/test`, {
+      const response = await fetch(`/getUser`, {
         headers:{
           "x-access-token":localStorage.getItem("token")
         }
@@ -85,7 +93,8 @@ function LoggedInUser() {
         const data = await response.json();
         //when it receives data, sets logInStatus to true or false depending on response
         if(data){
-          console.log(data.loggedIn);
+          setLoggedInNickname(data.nickname);
+          setLoggedInEmail(data.email);
         }
       }
     } catch (error) {
@@ -134,7 +143,6 @@ function LoggedInUser() {
         const indexOfName = favoriteLists.indexOf(listNameToDelete);
         tempFavList.splice(indexOfName,1);
         setFavoriteLists(tempFavList);
-        console.log('new:' + favoriteLists);
       } else if (response.status === 404) {
         console.log('List name does not exist');
       } else {
@@ -231,12 +239,15 @@ function LoggedInUser() {
   const getFavLists = async () => {
     // fetch the list names
     try {
-      const res = await fetch('api/lists/fav/names');
+      const res = await fetch(`/api/lists/fav/names`, {
+        headers:{
+          "x-access-token":localStorage.getItem("token")
+        }
+      });
       if (!res.ok){
         throw new Error('Request failed');
       }
       const data = await res.json();
-
       // compare the new list with the current list
       if (!arraysAreEqual(data.listNames, favoriteLists)) {
         // set list names as 'favoriteLists' array only if there are changes
@@ -258,7 +269,6 @@ function LoggedInUser() {
         return false;
       }
     }
-
     return true;
   };
 
@@ -473,7 +483,6 @@ function LoggedInUser() {
       }
     }
     setSearchResultIds(ids);
-    console.log('final ids: ' + searchResultIds);
     //display heroes
     await displayHeroes();
     setErrorMessage('');
@@ -591,16 +600,40 @@ function LoggedInUser() {
     event.preventDefault();
     searchSuperheroes();
   };
+  
+  //logs user out
+  const logOut = async () => {
+    try {
+      const response = await fetch(`/logout`);
+      if (!response.ok) {
+        //if no heroes found, displays message
+        console.log("Error logging out");
+      }else{
+        //remove token from local storage
+        localStorage.removeItem("token");
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  //test
+  const test = ()=>{
+    navigate('/listInfo/:testName');
+  }
 
   return (
     <div id="container">
     <nav>
         <ul className="nav-links">
         <li>
-            <Link to = "/" className="nav-button">Home</Link>
+            <button className="nav-button" onClick={logOut}>Log Out</button>
         </li>
+        <li id="welcomeMessage">Welcome, {loggedInNickname}</li>
         </ul>
     </nav>
+    <h1>SuperHeroes Hub</h1>
     <div id="topSection">
         {/* Top Left: Search Superheroes */}
         <div id="searchSuperheroes">

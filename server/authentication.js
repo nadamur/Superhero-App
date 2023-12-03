@@ -10,11 +10,6 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 
 router.use(cookieParser());
-// router.use(cors({
-//   origin: ["http://localhost:3000"],
-//   methods: ["GET","POST"],
-//   credentials: true
-// }));
 router.use(bodyParser.urlencoded({extended:true}));
 
 router.use(session({
@@ -30,7 +25,7 @@ router.use(session({
 //functions
 //handle errors
 const handleErrors = (err) => {
-    let errors = { username: '', email: '', password: '' };
+    let errors = { nickname: '', email: '', password: '', status: '', verification: '' };
     // incorrect email
     if (err.message === 'incorrect email') {
       errors.email = 'This email is not registered, ';
@@ -52,26 +47,24 @@ const handleErrors = (err) => {
     }
   return errors;
 }
-const maxAge = 3 * 60 * 60 * 10;
-//creates token
-const createToken = (id) =>{
-  return jwt.sign({id}, 'test secret', {
-    expiresIn: maxAge
-  });
-}
 
 //authentication
 //creates new user in database
 router.post('/signup', async (req, res) => {
-  const { username, email, password } = req.body;
+  const { nickname, email, password } = req.body;
   try {
-    const user = await User.create({ username, email, password });
-    const token = createToken(user._id);
-    res.cookie('jwt', token, {httpOnly: true, maxAge: maxAge});
-    res.status(201).json({user: user._id});
+    const user = await User.create({ nickname, email, password });
+    const id = user._id;
+    const token = jwt.sign({id}, 'test secret', {
+      expiresIn: 300,
+    });
+    req.session.user = user;
+    //res.cookie('jwt', token, {httpOnly: true, maxAge: maxAge});
+    res.status(200).json({ auth: true, token: token, user: user });
   }
   catch(err) {
     const errors = handleErrors(err);
+    console.log(err);
     res.status(400).json({errors});
   }
 });
@@ -83,7 +76,7 @@ router.post('/login', async (req,res) =>{
     const user = await User.login(email, password);
     const id = user._id;
     const token = jwt.sign({id}, 'test secret', {
-      expiresIn: 300,
+      expiresIn: 3000,
     })
     req.session.user = user;
     res.status(200).json({ auth: true, token: token, user: user });
@@ -100,6 +93,14 @@ router.get("/login", (req,res) =>{
   }else{
     res.send({loggedIn: false})
   }
+});
+
+//log out
+router.get('/logout', (req,res)=>{
+  console.log("clearing token from backend");
+  //delete cookie
+  res.clearCookie('jwt');
+  res.status(200).json({message: "Deleted successfully"});
 })
 
 
@@ -123,36 +124,9 @@ const verifyJWT = (req, res, next) => {
 }
 
 //test
-router.get("/test", verifyJWT, (req,res) =>{
-  res.json({loggedIn:true});
+router.get("/getUser", verifyJWT, (req,res) =>{
+  res.status(200).json({nickname:req.session.user.nickname, email: req.session.user.email});
 })
-
-//checks authentication status
-// router.get('/api/check-auth', requireAuth, (req, res) => {
-//   // If the middleware (requireAuth) is passed, the user is authenticated
-//   res.json({ isAuthenticated: true });
-// });
-
-//check current user
-const checkUser = (req,res,next) =>{
-  const token = req.cookies.jwt;
-  if (token) {
-    jwt.verify(token, 'test secret', async (err, decodedToken) => {
-      if (err) {
-        console.log(err.message);
-        res.locals.user = null;
-        next();
-      } else {
-        let user = await User.findById(decodedToken.id)
-        res.locals.user = user;
-        next(); // Token is verified, proceed to the next middleware
-      }
-    });
-  } else {
-    res.locals.user = null;
-    next();
-  }
-}
 
 
 module.exports = router;

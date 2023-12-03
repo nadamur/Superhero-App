@@ -7,7 +7,13 @@
   padding: 10px;
 }
 
-
+#welcomeMessage{
+  font-family: 'Your Fancy Font', cursive;
+  margin-top: 20px;
+  margin-right: 20px;
+  color:#007acc;
+  font-size: large;
+}
 
 #searchForm {
   display: flex;

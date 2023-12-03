@@ -3,11 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from './authContext';
 
-function SignUp({authenticationComplete}) {
-  //authentication
-  const {isAuthenticated, login} = useAuth();
+function SignUp() {
   //user info
-  const [username, setUsername] = useState('');
+  const [nickname, setNickname] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   //errors
@@ -18,7 +16,7 @@ function SignUp({authenticationComplete}) {
     try {
       const res = await fetch('/signup', { 
         method: 'POST', 
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ nickname, email, password }),
         headers: {'Content-Type': 'application/json'}
       });
       const data = await res.json();
@@ -30,8 +28,7 @@ function SignUp({authenticationComplete}) {
           setPasswordError(data.errors.password);
         }
       }else{
-        authenticationComplete();
-        login();
+        localStorage.setItem("token", data.token);
         alert('Account created successfully!');
         navigate('/loggedin');
       }
@@ -52,12 +49,12 @@ function SignUp({authenticationComplete}) {
         </nav>
         <h2 id="title">Sign Up Page</h2>
         <div className = "signUpContainer">
-            <label htmlFor="usernameInput">Enter username: </label>
+            <label htmlFor="nicknameInput">Enter nickname: </label>
             <input
               type="text"
-              id="usernameInput"
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
+              id="nicknameInput"
+              value={nickname}
+              onChange={(event) => setNickname(event.target.value)}
               placeholder="..."
             />
             <label htmlFor="emailInput">Enter email: </label>

@@ -5,6 +5,7 @@ import './App.css'; // Import your CSS file
 import LogIn from './LogIn.js';
 import SignUp from './SignUp.js';
 import LoggedInUser from './LoggedInUser.js';
+import ListInfo from './FavListInfo.js';
 import { useAuth, AuthProvider } from './authContext';
 
 
@@ -375,6 +376,7 @@ function App() {
           <Route path="/login" element={<LogIn/>} />
           <Route path="/signup" element={<SignUp/>} />
           <Route path="/loggedin" element={<LoggedInUser />} />
+          <Route path="/listInfo/:listName" element={<ListInfo/>}/>
           
           <Route
             path="/"
@@ -466,7 +468,6 @@ function App() {
                   </div>
                   </div>
                   </div>
-
                   {/* Bottom Right: Favorite Heroes */}
                   <div id="publicLists">
                   <h2>Public Lists</h2>

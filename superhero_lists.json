@@ -1,5 +1,98 @@
-{
-  "list2": [],
-  "list4": [],
-  "list6": []
-}
+[
+  {
+    "name": "list",
+    "creator": "new@gmail.com",
+    "ids": [],
+    "ratings": [],
+    "comments": [],
+    "nicknames": [],
+    "status": [],
+    "reviewDate": [],
+    "visibility": "private",
+    "lastModified": "03-12-23 01:19:08"
+  },
+  {
+    "name": "jjj",
+    "creator": "new@gmail.com",
+    "ids": [],
+    "ratings": [],
+    "comments": [],
+    "nicknames": [],
+    "status": [],
+    "reviewDate": [],
+    "visibility": "private",
+    "lastModified": "03-12-23 01:22:57"
+  },
+  {
+    "name": "ppp",
+    "creator": "new@gmail.com",
+    "ids": [],
+    "ratings": [],
+    "comments": [],
+    "nicknames": [],
+    "status": [],
+    "reviewDate": [],
+    "visibility": "private",
+    "lastModified": "03-12-23 01:23:39"
+  },
+  {
+    "name": "nnnn",
+    "creator": "test@gmail.com",
+    "ids": [],
+    "ratings": [],
+    "comments": [],
+    "nicknames": [],
+    "status": [],
+    "reviewDate": [],
+    "visibility": "private",
+    "lastModified": "03-12-23 01:57:57"
+  },
+  {
+    "name": "tresting",
+    "creator": "test@gmail.com",
+    "ids": [],
+    "ratings": [],
+    "comments": [],
+    "nicknames": [],
+    "status": [],
+    "reviewDate": [],
+    "visibility": "private",
+    "lastModified": "03-12-23 02:00:27"
+  },
+  {
+    "name": "ttt",
+    "creator": "test@gmail.com",
+    "ids": [],
+    "ratings": [],
+    "comments": [],
+    "nicknames": [],
+    "status": [],
+    "reviewDate": [],
+    "visibility": "private",
+    "lastModified": "03-12-23 02:03:11"
+  },
+  {
+    "name": "bigtest",
+    "creator": "test@gmail.com",
+    "ids": [],
+    "ratings": [],
+    "comments": [],
+    "nicknames": [],
+    "status": [],
+    "reviewDate": [],
+    "visibility": "private",
+    "lastModified": "03-12-23 02:05:19"
+  },
+  {
+    "name": "biggest",
+    "creator": "test@gmail.com",
+    "ids": [],
+    "ratings": [],
+    "comments": [],
+    "nicknames": [],
+    "status": [],
+    "reviewDate": [],
+    "visibility": "private",
+    "lastModified": "03-12-23 02:08:44"
+  }
+]

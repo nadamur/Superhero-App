@@ -7,12 +7,12 @@ const mongoose = require('mongoose');
 const fs = require('fs');
 const superheroesInfo = require('../superhero_info.json');
 const superheroesPowers = require('../superhero_powers.json');
-const listDetails = '../superhero_reviews.json';
 const mainDir = path.join(__dirname, '../');
 const clientDir = path.join(__dirname, '../client');
 const userRoutes = require('./authentication.js');
 const cookieParser = require('cookie-parser');
 const stringSimilarity = require('string-similarity');
+const heroLists = '../superhero_lists.json';
 app.use(express.static(mainDir));
 app.use(express.static(clientDir));
 app.use(express.json());
@@ -103,10 +103,10 @@ function getHeroPower(id){
 
 app.use(express.json());
 
-//returns all fav list names
+//returns all fav list names for the current user
 app.get('/api/lists/fav/names', (req, res) => {
-    const filePath = '../superhero_lists.json';
-    fs.readFile(filePath, 'utf-8', (err, data) => {
+    const email = req.session.user.email;
+    fs.readFile(heroLists, 'utf-8', (err, data) => {
       if (err) {
         console.error('Error reading JSON file:', err);
         res.status(500).json({ error: 'Internal server error' });
@@ -115,21 +115,20 @@ app.get('/api/lists/fav/names', (req, res) => {
       if(data){
         try {
             const jsonData = JSON.parse(data);
-            const listNames = Object.keys(jsonData);
-      
-            if (listNames.length > 0) {
-              res.json({ listNames });
-              return;
-            } else {
-              res.status(404).json({ error: 'No lists found' });
-              return;
+            const userLists = jsonData.filter(list => list.creator === email);
+            //list with all list names
+            let listNames = [];
+            for (const list of userLists){
+                listNames.push(list.name);
             }
+            res.json({listNames});
           } catch (parseError) {
             console.error('Error parsing JSON data:', parseError);
             res.status(500).json({ error: 'Error parsing JSON data' });
             return;
           }
       }else{
+        res.status(404).json({error: 'List not found'});
         return;
       }
     });
@@ -242,57 +241,10 @@ app.get('/api/search/:pattern/:field?/:n', (req, res) => {
 //lists created are private by default
 //this method will create a list with a list name and returns an error if the name already exists
 app.post('/api/lists/:listName', (req, res) => {
+    const email = req.session.user.email;
     const listName = req.params.listName;
-    const filePath = '../superhero_lists.json';
-    fs.readFile(filePath, 'utf-8', (err, data) => {
-        if (err) {
-          console.error('Error reading JSON file:', err);
-          res.status(500).json({ error: 'Internal server error' });
-        }
-        //if there is data in the json file
-        if (data){
-            const jsonData = JSON.parse(data);
-            jsonKeys = Object.keys(jsonData);
-            for (key of jsonKeys){
-                if (key === listName){
-                    res.status(404).json({ error: 'List name already exists' });
-                    return;
-                }
-            }
-            const newListName = listName;
-            const newSuperheroIds = [];
-            jsonData[newListName] = newSuperheroIds;
-            const jsonString = JSON.stringify(jsonData, null, 2);
-            fs.writeFile(filePath, jsonString, 'utf-8', (writeErr) => {
-            if (writeErr) {
-                console.error('Error writing JSON file:', writeErr);
-                res.status(500).json({ error: 'Internal server error' });
-                return;
-            } else {
-                console.log('JSON data has been updated and written to', filePath);
-                res.sendStatus(201);
-                return;
-            }
-            });
-        }else{
-            //if there is no data in the json file, must start with initial data (can not parse)
-            const initialData = { [listName]: [] };
-            
-            fs.writeFile(filePath, JSON.stringify(initialData, null, 2), 'utf-8', (writeErr) => {
-                if (writeErr) {
-                    console.error('Error writing JSON file:', writeErr);
-                    res.status(500).json({ error: 'Internal server error' });
-                    return;
-                } else {
-                    console.log('JSON data has been updated and written to', filePath);
-                    res.sendStatus(201);
-                    return;
-                }
-                });
-            }
-      });
-      //now add the list to the superhero_reviews file with default values
-      fs.readFile(listDetails, 'utf-8', (err, data) => {
+      //now add the list to the file with default values
+      fs.readFile(heroLists, 'utf-8', (err, data) => {
         if (err) {
         console.error('Error reading JSON file:', err);
         res.status(500).json({ error: 'Internal server error' });
@@ -303,6 +255,8 @@ app.post('/api/lists/:listName', (req, res) => {
                 const jsonData = JSON.parse(data);
                 const newEntry ={
                     name: listName,
+                    creator: email,
+                    ids: [],
                     ratings: [],
                     comments: [],
                     nicknames: [],
@@ -312,8 +266,8 @@ app.post('/api/lists/:listName', (req, res) => {
                     lastModified: getCurrentFormattedDateTime()
                 };
                 jsonData.push(newEntry);
-                fs.writeFileSync(listDetails, JSON.stringify(jsonData, null, 2), 'utf8');
-                console.log('New list defaulted successfully');
+                fs.writeFileSync(heroLists, JSON.stringify(jsonData, null, 2), 'utf8');
+                res.sendStatus(201);
                 } catch (parseError) {
                 console.error('Error parsing JSON data:', parseError);
                 res.status(500).json({ error: 'Error parsing JSON data' });
@@ -323,6 +277,8 @@ app.post('/api/lists/:listName', (req, res) => {
             //if there is no data in the json file, must start with initial data (can not parse)
             const initialData = [{
                 name: listName,
+                creator: email,
+                ids:[],
                 ratings: [],
                 comments: [],
                 nicknames: [],
@@ -331,13 +287,13 @@ app.post('/api/lists/:listName', (req, res) => {
                 visibility: "private",
                 lastModified: getCurrentFormattedDateTime()
             }];
-            fs.writeFile(listDetails, JSON.stringify(initialData, null, 2), 'utf-8', (writeErr) => {
+            fs.writeFile(heroLists, JSON.stringify(initialData, null, 2), 'utf-8', (writeErr) => {
                 if (writeErr) {
                     console.error('Error writing JSON file:', writeErr);
                     res.status(500).json({ error: 'Internal server error' });
                     return;
                 } else {
-                    console.log('JSON data has been updated and written to', listDetails);
+                    console.log('JSON data has been updated and written to', heroLists);
                     return;
                 }
                 });
@@ -345,101 +301,78 @@ app.post('/api/lists/:listName', (req, res) => {
     });
 
 });
+
 //save list of superhero IDs to a given list name
 app.put('/api/lists/add/:listNameAndIds', (req, res) => {
     const listName = req.params.listNameAndIds;
     // assuming we are receiving the URL in the format: /api/lists/myList?ids=1,2,3
     const ids = req.query.ids;
     const idArray = ids.split(',');
-    const filePath = '../superhero_lists.json';
-    fs.readFile(filePath, 'utf-8', (err, data) => {
+    fs.readFile(heroLists, 'utf-8', (err, data) => {
         if (err) {
             console.error('Error reading JSON file:', err);
             res.status(500).json({ error: 'Internal server error' });
             return;
         }
-        const jsonData = JSON.parse(data);
-        // check if the listName exists
-        if (jsonData.hasOwnProperty(listName)) {
-            const existingIds = new Set(jsonData[listName]);
-            // add unique IDs to the existing list using a set so no repeated ids
-            for (const id of idArray) {
-                existingIds.add(id);
+        try{
+            const jsonData = JSON.parse(data);
+            // find specific list
+            const list = jsonData.find(l=>l.name ===listName);
+            //if found
+            if(list){
+                list.ids.push(ids);
+                //write into file
+                fs.writeFileSync(heroLists, JSON.stringify(jsonData, null, 2), 'utf8');
+                res.status(200).json({ message: 'List ids updated' });
             }
-            // convert the Set back to an array
-            jsonData[listName] = [...existingIds];
-            const jsonString = JSON.stringify(jsonData, null, 2);
-            //write new array to file
-            fs.writeFile(filePath, jsonString, 'utf-8', (writeErr) => {
-                if (writeErr) {
-                    console.error('Error writing JSON file:', writeErr);
-                    res.status(500).json({ error: 'Internal server error' });
-                    return;
-                } else {
-                    res.sendStatus(200);
-                    return;
-                }
-            });
-        } else {
-            // if it doesn't exist, send an error
-            res.status(404).json({ error: 'List name does not exist' });
-            return;
+             else {
+                // if it doesn't exist, send an error
+                res.status(404).json({ error: 'List name does not exist' });
+                return;
         }
+    }
+    catch(error){
+        console.error('Error parsing JSON data:', error);
+        res.status(500).json({ error: 'Error parsing JSON data' });
+    }
     });
 });
 
 //get list of superhero IDs for given list name
 app.get('/api/lists/:listName', (req, res) => {
     const listName = req.params.listName;
-    const filePath = '../superhero_lists.json';
-    fs.readFile(filePath, 'utf-8', (err, data) => {
+    fs.readFile(heroLists, 'utf-8', (err, data) => {
         if (err) {
           console.error('Error reading JSON file:', err);
           res.status(500).json({ error: 'Internal server error' });
           return;
         }
-        const jsonData = JSON.parse(data);
-        //if the name does exist, update the IDs
-        ids = jsonData[listName];
-        if(ids){
-            res.json({ids});
+        try{
+            const jsonData = JSON.parse(data);
+            //if the name does exist, update the IDs
+            const list = jsonData.find(list => list.name === listName);
+            if(list){
+                const {ids} = list;
+                res.json({ids});
+                return;
+            }else{
+                //if it doesnt exist, send an error
+                res.status(404).json({ error: 'List name does not exist' });
+            } 
+
+        }catch(error){
+            console.error('Error parsing JSON data:', parseError);
+            res.status(500).json({ error: 'Error parsing JSON data' });
             return;
-        }else{
-            //if it doesnt exist, send an error
-            res.status(404).json({ error: 'List name does not exist' });
-        }     
+        }
       }); 
 });
 
 //delete list with given name
 app.put('/api/lists/delete/:listName', (req, res) => {
     const listName = req.params.listName;
-    const filePath = '../superhero_lists.json';
-    fs.readFile(filePath, 'utf-8', (err, data) => {
-        if (err) {
-          console.error('Error reading JSON file:', err);
-          res.status(500).json({ error: 'Internal server error' });
-        }
-        const jsonData = JSON.parse(data);
-        //if the name does exist, delete it
-        if (jsonData.hasOwnProperty(listName)){
-            delete jsonData[listName];
-            const jsonString = JSON.stringify(jsonData, null, 2);
-            fs.writeFile(filePath, jsonString, 'utf-8', (writeErr) => {
-            if (writeErr) {
-                console.error('Error writing JSON file:', writeErr);
-                res.status(500).json({ error: 'Internal server error' });
-            } else {
-                res.sendStatus(200);
-            }
-            });
-        }else{
-            //if it doesnt exist, send an error
-            res.status(404).json({ error: 'List name does not exist' });
-        }        
-      });
       //delete the list from superhero_reviews as well
-      fs.readFile(listDetails, 'utf-8', (err, data) => {
+      fs.readFile(heroLists, 'utf-8', (err, data) => {
         if (err) {
           console.error('Error reading JSON file:', err);
           res.status(500).json({ error: 'Internal server error' });
@@ -447,15 +380,14 @@ app.put('/api/lists/delete/:listName', (req, res) => {
         try{
             const jsonData = JSON.parse(data);
             const index = jsonData.findIndex(list => list.name === listName);
-            console.log('index: ' + index);
             //if index found, delete list
             if(index !== -1){
                 jsonData.splice(index,1);
-                fs.writeFileSync(listDetails, JSON.stringify(jsonData, null, 2), 'utf8');
+                fs.writeFileSync(heroLists, JSON.stringify(jsonData, null, 2), 'utf8');
+                res.status(200).json({message:'List deleted'});
                 console.log("Successfully deleted from reviews file");
             }else{
                 //if not found
-                console.log("Not found in review file");
                 res.status(404).json({error: 'List name does not exist'});
             }
 
@@ -469,8 +401,8 @@ app.put('/api/lists/delete/:listName', (req, res) => {
 //get list of names, info and powers of all superheroes in list
 app.get('/api/lists/info/:listName', (req, res) => {
     const listName = req.params.listName;
-    const filePath = '../superhero_lists.json';
-    fs.readFile(filePath, 'utf-8', (err, data) => {
+    const heroLists = '../superhero_lists.json';
+    fs.readFile(heroLists, 'utf-8', (err, data) => {
         if (err) {
           console.error('Error reading JSON file:', err);
           res.status(500).json({ error: 'Internal server error' });
@@ -500,7 +432,7 @@ app.get('/api/lists/info/:listName', (req, res) => {
 
 //this method will return list names in review file
 app.get('/api/lists/details/names', (req, res) => {
-    fs.readFile(listDetails, 'utf-8', (err, data) => {
+    fs.readFile(heroLists, 'utf-8', (err, data) => {
       if (err) {
         console.error('Error reading JSON file:', err);
         res.status(500).json({ error: 'Internal server error' });
@@ -529,7 +461,7 @@ app.get('/api/lists/details/names', (req, res) => {
 //this method will return all the reviews of a list
 app.get('/api/lists/details/reviews/:listName', (req, res) => {
     const listName = req.params.listName;
-    fs.readFile(listDetails, 'utf-8', (err, data) => {
+    fs.readFile(heroLists, 'utf-8', (err, data) => {
         if (err) {
         console.error('Error reading JSON file:', err);
         res.status(500).json({ error: 'Internal server error' });
@@ -539,8 +471,6 @@ app.get('/api/lists/details/reviews/:listName', (req, res) => {
         try {
         const jsonData = JSON.parse(data);
         const list = jsonData.find(list => list.name === listName);
-        console.log(list);
-
         if (list) {
             const { ratings, comments, visibility, nicknames, reviewDate } = list;
             res.json({ ratings, comments, visibility, nicknames, reviewDate });
@@ -564,7 +494,7 @@ app.get('/api/lists/details/reviews/:listName', (req, res) => {
 app.put('/api/lists/details/reviews/:listName', (req, res) => {
     const listName = req.params.listName;
     const { rating, comment, nickname } = req.body;
-    fs.readFile(listDetails, 'utf-8', (err, data) => {
+    fs.readFile(heroLists, 'utf-8', (err, data) => {
         if (err) {
           console.error('Error reading JSON file:', err);
           res.status(500).json({ error: 'Internal server error' });
@@ -581,11 +511,9 @@ app.put('/api/lists/details/reviews/:listName', (req, res) => {
                 list.status.push("public");
                 list.reviewDate.push(getCurrentFormattedDateTime());
                 // write the modified data back to the file
-                fs.writeFileSync(listDetails, JSON.stringify(jsonData, null, 2), 'utf8');
-                console.log('Ratings updated');
+                fs.writeFileSync(heroLists, JSON.stringify(jsonData, null, 2), 'utf8');
                 res.status(200).json({ message: 'Ratings updated' });
             }else{
-                console.log("List not found");
                 res.status(404).json({ error: 'List not found' });
             }
         }
@@ -601,7 +529,7 @@ app.put('/api/lists/details/visibility/:listName', (req, res) => {
     const listName = req.params.listName;
     // assuming we are receiving the URL in the format: /api/lists/visibility/myList?visibility=public
     const visibility = req.query.visibility;
-    fs.readFile(listDetails, 'utf-8', (err, data) => {
+    fs.readFile(heroLists, 'utf-8', (err, data) => {
         if (err) {
           console.error('Error reading JSON file:', err);
           res.status(500).json({ error: 'Internal server error' });
@@ -614,7 +542,7 @@ app.put('/api/lists/details/visibility/:listName', (req, res) => {
             if (list){
                 list.visibility = visibility;
                 // write the modified data back to the file
-                fs.writeFileSync(listDetails, JSON.stringify(jsonData, null, 2), 'utf8');
+                fs.writeFileSync(heroLists, JSON.stringify(jsonData, null, 2), 'utf8');
                 console.log('Ratings updated');
                 res.status(200).json({ message: 'Ratings updated' });
             }else{
