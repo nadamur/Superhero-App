@@ -263,7 +263,8 @@ app.post('/api/lists/:listName', (req, res) => {
                     status: [],
                     reviewDate: [],
                     visibility: "private",
-                    lastModified: getCurrentFormattedDateTime()
+                    lastModified: getCurrentFormattedDateTime(),
+                    descripton:""
                 };
                 jsonData.push(newEntry);
                 fs.writeFileSync(heroLists, JSON.stringify(jsonData, null, 2), 'utf8');
@@ -285,7 +286,8 @@ app.post('/api/lists/:listName', (req, res) => {
                 status: [],
                 reviewDate: [],
                 visibility: "private",
-                lastModified: getCurrentFormattedDateTime()
+                lastModified: getCurrentFormattedDateTime(),
+                descripton:""
             }];
             fs.writeFile(heroLists, JSON.stringify(initialData, null, 2), 'utf-8', (writeErr) => {
                 if (writeErr) {
@@ -320,7 +322,10 @@ app.put('/api/lists/add/:listNameAndIds', (req, res) => {
             const list = jsonData.find(l=>l.name ===listName);
             //if found
             if(list){
-                list.ids.push(ids);
+                for(id of idArray){
+                    list.ids.push(id);
+                }
+                
                 //write into file
                 fs.writeFileSync(heroLists, JSON.stringify(jsonData, null, 2), 'utf8');
                 res.status(200).json({ message: 'List ids updated' });
@@ -368,6 +373,76 @@ app.get('/api/lists/:listName', (req, res) => {
       }); 
 });
 
+//get all info for a list
+app.get('/api/lists/info/:listName', (req, res) => {
+    const listName = req.params.listName;
+    fs.readFile(heroLists, 'utf-8', (err, data) => {
+        if (err) {
+          console.error('Error reading JSON file:', err);
+          res.status(500).json({ error: 'Internal server error' });
+          return;
+        }
+        try{
+            const jsonData = JSON.parse(data);
+            //if the name does exist, return all info
+            const list = jsonData.find(list => list.name === listName);
+            if(list){
+                const {ids, visibility, lastModified, descripton} = list;
+                res.json({ids, visibility, lastModified, descripton});
+                return;
+            }else{
+                //if it doesnt exist, send an error
+                res.status(404).json({ error: 'List name does not exist' });
+            } 
+
+        }catch(error){
+            console.error('Error parsing JSON data:', parseError);
+            res.status(500).json({ error: 'Error parsing JSON data' });
+            return;
+        }
+      }); 
+});
+
+//save edited list with changes
+//editing manually will affect visibility, description, ids, lastModified
+//lastModified changes automatically
+app.put('/api/lists/info/:listName', (req, res) => {
+    const { ids, visibility, descripton } = req.body;
+    const listName = req.params.listName;
+    fs.readFile(heroLists, 'utf-8', (err, data) => {
+        if (err) {
+            console.error('Error reading JSON file:', err);
+            res.status(500).json({ error: 'Internal server error' });
+            return;
+        }
+        try{
+            const jsonData = JSON.parse(data);
+            // find specific list
+            const list = jsonData.find(l=>l.name ===listName);
+            //if found
+            if(list){
+                list.ids = ids
+                list.visibility = visibility;
+                list.lastModified = getCurrentFormattedDateTime();
+                list.descripton = descripton;
+                //write into file
+                fs.writeFileSync(heroLists, JSON.stringify(jsonData, null, 2), 'utf8');
+                res.status(200).json({ message: 'List info updated' });
+            }
+             else {
+                // if it doesn't exist, send an error
+                res.status(404).json({ error: 'List name does not exist' });
+                return;
+        }
+    }
+    catch(error){
+        console.error('Error parsing JSON data:', error);
+        res.status(500).json({ error: 'Error parsing JSON data' });
+    }
+    });
+});
+
+
 //delete list with given name
 app.put('/api/lists/delete/:listName', (req, res) => {
     const listName = req.params.listName;
@@ -399,7 +474,7 @@ app.put('/api/lists/delete/:listName', (req, res) => {
 });
 
 //get list of names, info and powers of all superheroes in list
-app.get('/api/lists/info/:listName', (req, res) => {
+app.get('/api/lists/heroes/info/:listName', (req, res) => {
     const listName = req.params.listName;
     const heroLists = '../superhero_lists.json';
     fs.readFile(heroLists, 'utf-8', (err, data) => {

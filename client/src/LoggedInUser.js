@@ -44,6 +44,12 @@ function LoggedInUser() {
     checkUser();
   },[])
 
+  //selection
+  useEffect(()=>{
+    console.log("results: " + selectedResults);
+  },[selectedResults]);
+
+
   //runs when user is successfully logged in in order to find appropriate list names
   useEffect(() => {
     //sets favorite lists from back end
@@ -105,6 +111,7 @@ function LoggedInUser() {
   //function to add selected items to a fav list
   const addSelectedHeroesToList= async (event) =>{
     event.preventDefault();
+    console.log('selected results: ' + selectedResults);
     const url = `/api/lists/add/${listNameToAdd}?ids=${selectedResults}`;
     try{
       const response = await fetch(url, {
@@ -190,6 +197,7 @@ function LoggedInUser() {
   const selectResults = (event) => {
     event.preventDefault();
     const listItem = event?.target?.closest('li');
+    console.log('id: ' + listItem.id);
     if (listItem) {
       const id = listItem.id;
       setSelectedResults((prevSelectedResults) => {
@@ -495,7 +503,7 @@ function LoggedInUser() {
         <ul>
           {searchResults.map((item, index) => (
             <div key={index} className="searchResult">
-              <li>
+              <li key={index} id={index} name={item.props.name} race={item.props.Race} publisher={item.props.Publisher} className ={selectedResults.includes(index) ? 'selected' : ''}>
               <strong style={{ color: '#007acc' }}>{item.props.name} </strong>
               <br />
               <span style={{ fontSize: '14px' }}>
@@ -620,7 +628,8 @@ function LoggedInUser() {
 
   //test
   const test = ()=>{
-    navigate('/listInfo/:testName');
+    const name = 'testName'
+    navigate(`/listInfo/:${name}`);
   }
 
   return (
