@@ -626,10 +626,10 @@ function LoggedInUser() {
     }
   };
 
-  //test
-  const test = ()=>{
-    const name = favoriteLists[0];
-    navigate(`/listInfo/${name}`);
+  //edit clicked list button
+  const editList = (name)=>{
+    const n = name;
+    navigate(`/listInfo/${n}`);
   }
 
   return (
@@ -711,7 +711,7 @@ function LoggedInUser() {
         </form>
         <ul id="favouriteLists">
             {favoriteLists.map((listName) => (
-            <button key={listName} onClick={displayFavHeroes}>{listName}</button>
+            <button key={listName} onClick={()=>editList(listName)}>{listName}</button>
             ))}
         </ul>
         </div>
@@ -765,7 +765,7 @@ function LoggedInUser() {
     <div id="footer">
         <label htmlFor="FAQ">FAQ: What Publishers are available</label>
         <button id="FAQ" onClick={() => { displayPublishers() }}>Available Publishers</button>
-        <button onClick={test}>Test</button>
+        {/* <button onClick={test}>Test</button> */}
     </div>
     <script src="script.js"></script>
     </div>

@@ -5,6 +5,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 function ListInfo() {
      //drop down
     const [dropdownStates, setDropdownStates] = useState([]);
+    //message
+    const [message, setMessage] = useState('');
     //name of list being edited
     const {listName} = useParams();
     //list details
@@ -23,15 +25,12 @@ function ListInfo() {
 
     //make sure user is authenticated, get their info
     useEffect(() => {
-        getListInfo();
-        // checkAuthentication();
-        // checkUser();
+      setMessage('Loading...');
+      getListInfo();
+      // checkAuthentication();
+      // checkUser();
 
     }, []);
-
-    useEffect(() => {
-       console.log('desc: ' + description);
-    }, [description]);
 
     // Function to handle dropdown click
     const toggleDropdown = (event, index) => {
@@ -50,7 +49,6 @@ function ListInfo() {
               throw new Error('Request failed');
             }
             const data = await response.json();
-            console.log('data desc: ' + data.description);
             setDescription(data.description);
             setIds(data.ids);
             setLastModified(data.lastModified);
@@ -127,12 +125,18 @@ function ListInfo() {
         }
 
     useEffect(() => {
-        const fetchHeroes = async () => {
-            const heroesArray = await displayHeroes();
-            setHeroes(heroesArray);
+      const fetchHeroes = async () => {
+          const heroesArray = await displayHeroes();
+          setHeroes(heroesArray);
         };
         fetchHeroes();
         displayHeroes();
+        console.log('ids: ' + ids);
+        if(ids.length !== 0){
+          setMessage('');
+        }else{
+          setMessage('No heroes in this list yet.')
+        }
     }, [ids, dropdownStates]);
 
     //slider
@@ -264,6 +268,7 @@ function ListInfo() {
             <ul>Last Modified: {lastModified}</ul>
             <div id="heroResults">
                 <ul>Heroes: </ul>
+                {message}
             {heroes.length > 0 && <ul>{heroes}</ul>}
             </div>
             <button onClick={updateInfo}>Confirm</button>

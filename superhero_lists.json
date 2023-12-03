@@ -33,7 +33,10 @@
   {
     "name": "list3",
     "creator": "test@gmail.com",
-    "ids": [],
+    "ids": [
+      "30",
+      "40"
+    ],
     "ratings": [],
     "comments": [],
     "nicknames": [],
@@ -56,12 +59,12 @@
     "nicknames": [],
     "status": [],
     "reviewDate": [],
-    "visibility": "Private",
-    "lastModified": "03-12-23 06:11:10",
+    "visibility": "Public",
+    "lastModified": "03-12-23 14:05:21",
     "description": "new description"
   },
   {
-    "name": "list2",
+    "name": "listt2",
     "creator": "new@gmail.com",
     "ids": [],
     "ratings": [],
