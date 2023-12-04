@@ -53,6 +53,34 @@ userSchema.statics.login = async function(email, password) {
     throw Error('incorrect email');
   };
 
+  //method to update password
+  userSchema.statics.updatePassword = async function (email, newPassword) {
+    try {
+      const user = await this.findOne({email});
+      if (!user) {
+        throw new Error('User not found');
+      }
+  
+      // Update the password
+      user.password = newPassword;
+      await user.save();
+  
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  //function to find all admins
+  userSchema.statics.findAdminUsers = async function () {
+    try {
+      const adminEmails = await this.find({ status: 'Admin' }).select('email');
+      return adminEmails.map(user => user.email);
+    } catch (error) {
+      console.error('Error finding admin emails:', error);
+      throw error; 
+    }
+  };
 
 //defining user model
 const User = mongoose.model('user', userSchema);

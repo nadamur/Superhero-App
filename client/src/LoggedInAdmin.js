@@ -7,7 +7,7 @@ import LogIn from './LogIn.js';
 import SignUp from './SignUp.js';
 
 
-function LoggedInUser() {
+function LoggedInAdmin() {
   //authentication
   const [logInStatus, setLogInStatus] = useState("");
   const [loggedInNickname, setLoggedInNickname] = useState("");
@@ -330,8 +330,13 @@ function LoggedInUser() {
   //display list info
   const displayList = (name)=>{
     const n = name;
-    navigate(`/listDisplayAndReview/${n}`);
+    navigate(`/listDisplayAdmin/${n}`);
   }
+    //display list info
+    const displayAccountCentre = (name)=>{
+        const n = name;
+        navigate(`/accountCentre`);
+      }
    //update password
    const updatePass = ()=>{
     navigate(`/updatePassword`);
@@ -736,7 +741,7 @@ function LoggedInUser() {
         <li>
             <button className="nav-button" onClick={logOut}>Log Out</button>
         </li>
-        <li id="welcomeMessage">Welcome, {loggedInNickname}</li>
+        <li id="welcomeMessage">Welcome, Admin {loggedInNickname}</li>
         <li>
         <button className="nav-button" onClick={updatePass}>Update Password</button>
         </li>
@@ -859,6 +864,7 @@ function LoggedInUser() {
 
     {/* Other sections go here */}
     <div id="footer">
+    <button id="FAQ" onClick={() => { displayAccountCentre()}}>Account Centre</button>
         <label htmlFor="FAQ">FAQ: What Publishers are available</label>
         <button id="FAQ" onClick={() => { displayPublishers() }}>Available Publishers</button>
         {/* <button onClick={test}>Test</button> */}
@@ -868,4 +874,4 @@ function LoggedInUser() {
   );
 }
 
-export default LoggedInUser;
+export default LoggedInAdmin;

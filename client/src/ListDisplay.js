@@ -66,7 +66,7 @@ function ListDisplay() {
         .map(([key, value]) => (
           <li key={key} style={{ fontSize: '14px' }}>{`${key}: ${value}, `}</li>
         ));
-        const power = <li>Power: {powers.powers === 'No Powers' ? 'None' : powers.powers.length > 1 ? powers.powers.join(', ') : powers.powers}</li>
+        const power = <li key ="11">Power: {powers.powers === 'No Powers' ? 'None' : powers.powers.length > 1 ? powers.powers.join(', ') : powers.powers}</li>
 
         infoArray.push(heroAttributes);
         infoArray.push(power)

@@ -65,6 +65,20 @@ function App() {
     }
   };
 
+  const calculateAverage = (array) => {
+    if (array.length === 0) {
+      return 0; // or handle as needed for your specific case
+    }
+  
+    const numericValues = array.map((value) => parseFloat(value));
+    const sum = numericValues.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+    const average = sum / numericValues.length;
+  
+    return average;
+  };
+  
+  
+
     //function to display public lists
     const displayPublicLists = async () =>{
       try {
@@ -73,8 +87,11 @@ function App() {
           throw new Error('Request failed');
         }
         const data = await response.json();
+
         
         const listsArray = await Promise.all(data.lists.map(async(list, index) => {
+          const ratings = list.ratings;
+          const avgRating = calculateAverage(ratings);
           const numberOfIds = list.ids.length;
           const ids = list.ids;
           const heroesInfo = await Promise.all(ids.map(async(i)=>{
@@ -90,7 +107,7 @@ function App() {
               <li key={index} name={list.name} nickname={list.creatorNickname}>
                 <strong style={{ color: '#007acc' }}>{list.name} </strong>
                 <br />
-                <span style={{ fontSize: '14px' }}>Creator: {list.creatorNickname}, # of Heroes: {numberOfIds}</span>
+                <span style={{ fontSize: '14px' }}>Creator: {list.creatorNickname}, # of Heroes: {numberOfIds}, Average Rating: {avgRating}</span>
                 <span className="dropdownArrow" onClick={(event) => toggleDropdownPublic(event, index)}>
                   ▼
                 </span>

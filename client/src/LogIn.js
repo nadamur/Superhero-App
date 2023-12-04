@@ -14,6 +14,11 @@ function LogIn() {
   const [passwordError, setPasswordError] = useState('');
   const [logInStatus, setLogInStatus] = useState("");
   const navigate = useNavigate();
+  //admin emails
+  const [adminEmails, setAdminEmails] = useState([]);
+  useEffect(()=>{
+    getAdminEmails();
+  },[])
   const logIn = async ()=>{
     try {
       const res = await fetch('/login', { 
@@ -35,11 +40,30 @@ function LogIn() {
         }
       }else{
         localStorage.setItem("token", data.token);
-        navigate('/loggedin');
+        if(adminEmails.includes(email)){
+          navigate('/loggedinAdmin');
+        }else{
+          navigate('/loggedin')
+        }
       }
     }
     catch (err) {
       console.log(err);
+    }
+  }
+
+  //get admin emails
+  const getAdminEmails = async () => {
+    try {
+      const response = await fetch(`/admins`);
+      if (!response.ok) {
+        throw new Error('Request failed');
+      }
+      const data = await response.json();
+      setAdminEmails(data.adminEmails);
+    } catch (error) {
+      console.error('Error:', error);
+      return null; // Handle the error gracefully
     }
   }
 

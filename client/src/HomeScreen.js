@@ -8,6 +8,11 @@ import LoggedInUser from './LoggedInUser.js';
 import ListInfo from './FavListInfo.js';
 import ListDisplay from './ListDisplay.js';
 import App from './App.js';
+import ListDisplayLoggedIn from './ListDisplayLoggedIn.js';
+import UpdatePass from './UpdatePass.js';
+import ListDisplayAdmin from './ListDisplayAdmin.js';
+import LoggedInAdmin from './LoggedInAdmin.js';
+import DisableAccounts from './DisableAccounts.js';
 import { useAuth, AuthProvider } from './authContext';
 
 
@@ -18,10 +23,15 @@ function HomeScreen() {
         <Routes>
           <Route path="/login" element={<LogIn/>} />
           <Route path="/signup" element={<SignUp/>} />
-          <Route path="/loggedin" element={<LoggedInUser />} />
           <Route path="/listInfo/:listName" element={<ListInfo/>}/>
           <Route path ="/listDisplay/:listName" element={<ListDisplay/>}/>
+          <Route path ="/listDisplayAndReview/:listName" element={<ListDisplayLoggedIn/>}/>
           <Route path = "/home" element={<App/>}/>
+          <Route path = "/accountCentre" element={<DisableAccounts/>}/>
+          <Route path ="/updatePassword" element={<UpdatePass/>}/>
+          <Route path ="/listDisplayAdmin/:listName" element={<ListDisplayAdmin/>}/>
+          <Route path="/loggedin" element={<LoggedInUser />} />
+          <Route path="/loggedinAdmin" element={<LoggedInAdmin/>}/>
           
           <Route
             path="/"

@@ -23,11 +23,21 @@
       "5",
       "6"
     ],
-    "ratings": [],
-    "comments": [],
-    "nicknames": [],
-    "status": [],
-    "reviewDate": [],
+    "ratings": [
+      "5"
+    ],
+    "comments": [
+      "nice"
+    ],
+    "nicknames": [
+      "newuser"
+    ],
+    "status": [
+      "Public"
+    ],
+    "reviewDate": [
+      "03-12-23 18:18:05"
+    ],
     "visibility": "Public",
     "lastModified": "04-12-23 02:43:35",
     "description": ""
@@ -50,24 +60,6 @@
     "description": "list3 description"
   },
   {
-    "name": "listt",
-    "creator": "new@gmail.com",
-    "creatorNickname": "newuser",
-    "ids": [
-      "1",
-      "2",
-      "4"
-    ],
-    "ratings": [],
-    "comments": [],
-    "nicknames": [],
-    "status": [],
-    "reviewDate": [],
-    "visibility": "Public",
-    "lastModified": "03-12-23 14:05:21",
-    "description": "listt new description"
-  },
-  {
     "name": "listt2",
     "creator": "new@gmail.com",
     "creatorNickname": "newuser",
@@ -76,11 +68,26 @@
       "3",
       "5"
     ],
-    "ratings": [],
-    "comments": [],
-    "nicknames": [],
-    "status": [],
-    "reviewDate": [],
+    "ratings": [
+      "3",
+      "1"
+    ],
+    "comments": [
+      "good list",
+      "bad"
+    ],
+    "nicknames": [
+      "newuser",
+      "newuser"
+    ],
+    "status": [
+      "Public",
+      "Hidden"
+    ],
+    "reviewDate": [
+      "03-12-23 18:16:08",
+      "03-12-23 18:29:31"
+    ],
     "visibility": "Public",
     "lastModified": "03-12-24 04:04:38",
     "description": ""

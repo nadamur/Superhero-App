@@ -559,8 +559,8 @@ app.get('/api/lists/details/reviews/:listName', (req, res) => {
         const jsonData = JSON.parse(data);
         const list = jsonData.find(list => list.name === listName);
         if (list) {
-            const { ratings, comments, visibility, nicknames, reviewDate } = list;
-            res.json({ ratings, comments, visibility, nicknames, reviewDate });
+            const { ratings, comments, status, nicknames, reviewDate } = list;
+            res.json({ ratings, comments, status, nicknames, reviewDate });
             return;
         } else {
             res.status(404).json({ error: 'No reviews found' });
@@ -628,6 +628,39 @@ app.put('/api/lists/details/visibility/:listName', (req, res) => {
             //if found
             if (list){
                 list.visibility = visibility;
+                // write the modified data back to the file
+                fs.writeFileSync(heroLists, JSON.stringify(jsonData, null, 2), 'utf8');
+                console.log('Visibility updated');
+                res.status(200).json({ message: 'Visibility updated' });
+            }else{
+                console.log("List not found");
+                res.status(404).json({ error: 'List not found' });
+            }
+        }
+        catch(error){
+            console.error('Error parsing JSON data:', error);
+            res.status(500).json({ error: 'Error parsing JSON data' });
+        }
+      });
+});
+
+//toggles the status of a review
+app.put('/api/lists/details/review/:listName', (req, res) => {
+    const listName = req.params.listName;
+    // assuming we are receiving the URL in the format: /api/lists/visibility/myList?index=1
+    const index = req.query.index;
+    fs.readFile(heroLists, 'utf-8', (err, data) => {
+        if (err) {
+          console.error('Error reading JSON file:', err);
+          res.status(500).json({ error: 'Internal server error' });
+        }
+        try{
+            const jsonData = JSON.parse(data);
+            //find specific list
+            const list = jsonData.find(l => l.name === listName);
+            //if found
+            if (list){
+                list.status[index] = list.status[index] === "Public" ? "Hidden" : "Public";
                 // write the modified data back to the file
                 fs.writeFileSync(heroLists, JSON.stringify(jsonData, null, 2), 'utf8');
                 console.log('Ratings updated');

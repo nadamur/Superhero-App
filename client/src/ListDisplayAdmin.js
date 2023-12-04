@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-function ListDisplayLoggedIn() {
+function ListDisplayAdmin() {
     //name of list being edited
     const {listName} = useParams();
     //list details
@@ -13,6 +13,7 @@ function ListDisplayLoggedIn() {
     const [rating, setRating] = useState('1');
     const [comment, setComment] = useState('');
     const [reviews, setReviews] = useState([]);
+    const [status, setStatus] = useState([]);
     //current user
     const [nickname, setNickname] = useState('');
 
@@ -23,7 +24,6 @@ function ListDisplayLoggedIn() {
       checkAuthentication();
       checkUser();
       getListInfo();
-      console.log(reviews);
     }, []);
 
     useEffect(() => {
@@ -35,9 +35,13 @@ function ListDisplayLoggedIn() {
           }
         };
         fetchReviews();
-        console.log(reviews);
+        console.log(status);
         
-    }, [reviews]);
+    }, [reviews,ids]);
+
+    useEffect(() => {
+      console.log(status);
+    }, [status]);
 
 
     useEffect(() => {
@@ -60,7 +64,7 @@ function ListDisplayLoggedIn() {
         if (res.status === 200) {
           //if updated,  log
           console.log("Successfully updated");
-          navigate('/loggedin');
+          navigate('/loggedinAdmin');
         } else if (res.status === 404) {
           console.log(res.message);
         } else {
@@ -103,7 +107,6 @@ function ListDisplayLoggedIn() {
     }
   };
 
-  
     //check current user
     const checkUser = async ()=>{
       try {
@@ -127,7 +130,28 @@ function ListDisplayLoggedIn() {
       }
     }
 
-    //gets public reviews of list
+//function to toggle status
+const toggleStatus= async (index) =>{
+  console.log('index: ' + index);
+  console.log('name: ' + listName);
+  console.log('here');
+  const url = `/api/lists/details/review/${listName}?index=${index}`;
+  try{
+    const response = await fetch(url, {
+      method: 'PUT',
+    });
+    if (response.status === 200) {
+      console.log('Status updated successfully');
+      getListInfo();
+    } else {
+      console.error('Error:', response.status);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+    //gets reviews oif list
     const getReviews = async () =>{
         try {
             const response = await fetch(`/api/lists/details/reviews/${listName}`);
@@ -138,21 +162,17 @@ function ListDisplayLoggedIn() {
             
             
             const {ratings, comments, status} = data;
-            const publicReviews = ratings
-              .map((r, index) => ({
-                rating: r,
-                comment: comments[index],
-                status: status[index],
-              }))
-              .filter((review) => review.status === 'Public')
-              .map((review, index) => (
-                <li key={index}>
-                  <p>Rating: {review.rating}</p>
-                  <p>Comment: {review.comment}</p>
-                </li>
-              ));
-
-            return publicReviews;
+            setStatus(data.status);
+            //status can be 'Public' or 'Hidden'
+            const reviewsArray = ratings.map((r, index) => (
+              <li key={index}>
+                <p>Rating: {r}</p>
+                <p>Comment: {comments[index]}</p>
+                <p>Status: {status[index]}</p>
+                <button onClick={()=>toggleStatus(index)}>Toggle Hide</button>
+              </li>
+            ));
+            return reviewsArray;
           } catch (error) {
             console.error('Error:', error);
             return null; // Handle the error gracefully
@@ -301,4 +321,4 @@ function ListDisplayLoggedIn() {
   );
 }
 
-export default ListDisplayLoggedIn;
+export default ListDisplayAdmin;

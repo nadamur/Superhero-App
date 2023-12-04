@@ -123,10 +123,55 @@ const verifyJWT = (req, res, next) => {
   }
 }
 
-//test
+//returns user
 router.get("/getUser", verifyJWT, (req,res) =>{
   res.status(200).json({nickname:req.session.user.nickname, email: req.session.user.email});
-})
+});
+
+//updates user status
+//assuming body will have new status, either 'Admin', 'enabled' or 'disabled' and email
+router.put("/updateStatus", async (req,res) =>{
+  const {email, newStatus} = req.body;
+  try {
+    // update user status in the database using the email
+    const updatedUser = await User.findOneAndUpdate({ email }, { status: newStatus }, { new: true });
+
+    if (updatedUser) {
+      res.json({ success: true, user: updatedUser });
+    } else {
+      res.status(404).json({ success: false, error: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error updating user status:', error);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+});
+
+//updates password
+router.put('/updatePassword', async(req,res)=>{
+  
+  const email = req.session.user.email;
+  console.log('email: ' + email);
+  const {newPassword} = req.body;
+  console.log('new pass: ' + newPassword);
+  try {
+    const updatedUser = await User.updatePassword(email, newPassword);
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error('Error updating password:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+//returns admin emails
+router.get("/admins", async (req,res) =>{
+  try{
+    const adminEmails = await User.findAdminUsers();
+    res.json({adminEmails});
+  }catch{
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 
 module.exports = router;
