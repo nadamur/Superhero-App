@@ -82,6 +82,29 @@ userSchema.statics.login = async function(email, password) {
     }
   };
 
+    //function to find all deactrivated accounts
+    userSchema.statics.findDeactivatedUsers = async function () {
+      try {
+        const disabledEmails = await this.find({ status: 'disabled' }).select('email');
+        return disabledEmails.map(user => user.email);
+      } catch (error) {
+        console.error('Error finding deactivated emails:', error);
+        throw error; 
+      }
+    };
+
+    //function to find all unverified accounts
+    userSchema.statics.findUnverifiedUsers = async function () {
+      try {
+        const unverifiedEmails = await this.find({ verificiation: 'unverified' }).select('email');
+        return unverifiedEmails.map(user => user.email);
+      } catch (error) {
+        console.error('Error finding deactivated emails:', error);
+        throw error; 
+      }
+    };
+  
+
 //defining user model
 const User = mongoose.model('user', userSchema);
 

@@ -5,6 +5,10 @@ import { useAuth } from './authContext';
 import './App.css'; // Import your CSS file
 import LogIn from './LogIn.js';
 import SignUp from './SignUp.js';
+import AUPText from './AUP.txt';
+import secText from './Security.txt';
+import DMCAN from './DMCAPolicy.txt';
+import DMCAT from './DMCATakedown.txt';
 
 
 function LoggedInAdmin() {
@@ -13,6 +17,11 @@ function LoggedInAdmin() {
   const [loggedInNickname, setLoggedInNickname] = useState("");
   const [loggedInEmail, setLoggedInEmail] = useState("");
   const navigate = useNavigate();
+  //policies
+  const [AUP, setAUP] = useState('');
+  const [security, setSecurity] = useState('');
+  const [DMCAPolicy, setDMCAPolicy] = useState('');
+  const [DMCATakedown, setDMCATakedown] = useState('');
   //search related
   const [raceInput, setRaceInput] = useState('');
   const [nameInput, setNameInput] = useState('');
@@ -45,7 +54,62 @@ function LoggedInAdmin() {
   useEffect(()=>{
     checkAuthentication();
     checkUser();
-  },[])
+  },[]);
+
+  useEffect(()=>{
+    const fetchInitialText = async () => {
+      try {
+        const response = await fetch('/static/media/AUP.e223bc78bd0a5a8a8f99.txt');
+        if (!response.ok) {
+          throw new Error('Failed to fetch initial text');
+        }
+        const data = await response.text();
+        setAUP(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    const fetchSecurity = async () => {
+      try {
+        const response = await fetch(secText);
+        if (!response.ok) {
+          throw new Error('Failed to fetch initial text');
+        }
+        const data = await response.text();
+        setSecurity(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    const fetchDMCATakedown = async () => {
+      try {
+        const response = await fetch(DMCAT);
+        if (!response.ok) {
+          throw new Error('Failed to fetch initial text');
+        }
+        const data = await response.text();
+        setDMCATakedown(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    const fetchDMCAPolicy = async () => {
+      try {
+        const response = await fetch(DMCAN);
+        if (!response.ok) {
+          throw new Error('Failed to fetch initial text');
+        }
+        const data = await response.text();
+        setDMCAPolicy(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchSecurity();
+    fetchInitialText();
+    fetchDMCAPolicy();
+    fetchDMCATakedown();
+  },[]);
 
 
 
@@ -194,7 +258,7 @@ function LoggedInAdmin() {
           });
           if (response.status === 201) {
             console.log('List created successfully');
-          } else if (response.status === 404) {
+          } else if (response.status === 403) {
             alert('List name already exists, try again');
           } else {
             console.error('Error in creating list', response.status);
@@ -628,6 +692,30 @@ function LoggedInAdmin() {
   
     return average;
   };
+  //function to change AUP
+  const changeAUP = async ()=>{
+    const newPolicy = prompt("Enter the new AUP: ");
+    setAUP(newPolicy);
+    try {
+        await fetch('/api/updateAUP', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ text: newPolicy }),
+        });
+      } catch (error) {
+        console.error(error);
+      }
+  }
+  //function to change DMCA Notice
+  const changeDMCA = ()=>{
+    const newPolicy = prompt("Enter the new DMCA: ");
+  }
+  //function to security
+  const changeSecurity = ()=>{
+    const newPolicy = prompt("Enter the new Security Policy: ");
+  }
   
   // Function to handle dropdown click
   const toggleDropdown = (event, index) => {
@@ -865,9 +953,14 @@ function LoggedInAdmin() {
     {/* Other sections go here */}
     <div id="footer">
     <button id="FAQ" onClick={() => { displayAccountCentre()}}>Account Centre</button>
-        <label htmlFor="FAQ">FAQ: What Publishers are available</label>
-        <button id="FAQ" onClick={() => { displayPublishers() }}>Available Publishers</button>
-        {/* <button onClick={test}>Test</button> */}
+    <button id="FAQ" onClick={() => { alert(security) }}>Edit Security and Privacy Policy</button>
+<button id="FAQ" onClick={() => { alert(DMCAPolicy) }}>Edit DMCA Notice & Takedown Policy</button>
+
+<button id="FAQ" onClick={changeAUP}>Edit AUP</button>
+
+
+<button id="FAQ" onClick={() => { alert(DMCATakedown) }}>DMCA Takedown Procedures</button>
+ {/* <button onClick={test}>Test</button> */}
     </div>
     <script src="script.js"></script>
     </div>

@@ -227,20 +227,7 @@ const toggleStatus= async (index) =>{
           }
     }
 
-    //function to display previous reviews
-  //   const displayReviews = async () =>{
-  //     const reviewsArray = [];
-  //     for (const review of ids) {
-  //         const hero = await getHero(i);
-  //         const powers = await getPowers(i);
-  //         heroesArray.push(
-  //             <div key ={i}>
-  //             <button id={i} onClick={() => displayHeroInfo(hero, powers)}>{hero.name}</button>
-  //             </div>
-  //         );
-  //     }
-  //     return heroesArray;
-  // }
+
 
 //function to get all hero info
   const getHero = async (id) => {
@@ -277,7 +264,7 @@ const toggleStatus= async (index) =>{
   return (
     <div>
         <h2 id="title">List Info: {listName}</h2>
-        <button onClick={() =>navigate("/home")}>Done</button>
+        <button onClick={() =>navigate("/loggedinAdmin")}>Done</button>
         <div class="heroes-container">
     <h2>Heroes</h2>
         {heroes.length > 0 && <ul>{heroes}</ul>}

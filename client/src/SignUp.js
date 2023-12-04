@@ -29,8 +29,8 @@ function SignUp() {
         }
       }else{
         localStorage.setItem("token", data.token);
-        alert('Account created successfully!');
-        navigate('/loggedin');
+        alert('Account created successfully! Please verify your email...');
+        navigate('/verifyEmail');
       }
     }
     catch (err) {

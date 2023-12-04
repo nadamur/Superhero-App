@@ -26,11 +26,39 @@ function ListInfo() {
     //make sure user is authenticated, get their info
     useEffect(() => {
       setMessage('Loading...');
-      getListInfo();
+      //checks user is authenticated
       checkAuthentication();
+      //gets their info
       checkUser();
-
+      //checks whether they are authenticated to edit this list
+      checkFavLists();
+      getListInfo();
     }, []);
+
+    
+//checks users lists, if the requested list is not one of the users owned lists, redirects back to '/loggedin'
+const checkFavLists = async () => {
+  // fetch the list names
+  try {
+    const res = await fetch(`/api/lists/fav/names`, {
+      headers:{
+        "x-access-token":localStorage.getItem("token")
+      }
+    });
+    if (!res.ok){
+      throw new Error('Request failed');
+    }
+    const data = await res.json();
+    // compare the new list with the current list
+    if (data.listNames.includes(listName)){
+      return;
+    }else{
+      navigate('/loggedin');
+    }
+  } catch (error) {
+    console.error('Error fetching favorite lists:', error);
+  }
+};
 
     // Function to handle dropdown click
     const toggleDropdown = (event, index) => {
@@ -131,7 +159,6 @@ function ListInfo() {
         };
         fetchHeroes();
         displayHeroes();
-        console.log('ids: ' + ids);
         if(ids.length !== 0){
           setMessage('');
         }else{
@@ -271,7 +298,7 @@ function ListInfo() {
                 {message}
             {heroes.length > 0 && <ul>{heroes}</ul>}
             </div>
-            <button onClick={updateInfo}>Confirm</button>
+            <button onClick={updateInfo}>Save Changes</button>
             <button onClick={() =>navigate("/loggedin")}>Done</button>
             </div>
         </div>

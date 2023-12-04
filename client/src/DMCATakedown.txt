@@ -1,0 +1,19 @@
+DMCA Takedown Procedure
+
+Workflow Document:
+
+Submission: Users submit notices to nmurad4@uwo.ca.
+Review: The received notice is reviewed for validity.
+Takedown: If valid, content is temporarily removed pending resolution.
+Logging Tools:
+
+Takedown Request Log:
+Date | Requester | Alleged Infringement | Status
+Infringement Notice Log:
+Date | Sender | Alleged Infringement | Status
+Dispute Claim Log:
+Date | Claimant | Disputed Content | Status
+Disabling and Restoring Tools:
+
+Disable Content Tool: Temporarily hides content with alleged copyright violations.
+Restore Content Tool: Restores content after resolution.

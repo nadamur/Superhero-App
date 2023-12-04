@@ -16,8 +16,13 @@ function LogIn() {
   const navigate = useNavigate();
   //admin emails
   const [adminEmails, setAdminEmails] = useState([]);
+  //deactivated emails
+  const [deactivatedEmails, setDeactivatedEmails] = useState([]);
+  //unverified emails
+  const [unverifiedEmails, setUnverifiedEmails] = useState([]);
   useEffect(()=>{
     getAdminEmails();
+    getDeactivatedEmails();
   },[])
   const logIn = async ()=>{
     try {
@@ -42,8 +47,10 @@ function LogIn() {
         localStorage.setItem("token", data.token);
         if(adminEmails.includes(email)){
           navigate('/loggedinAdmin');
-        }else{
-          navigate('/loggedin')
+        }else if (deactivatedEmails.includes(email)){
+          setEmailError('Your account has been deactivated. Contact admin@gmail.com for more info.');
+        }else if (unverifiedEmails.includes(email)){
+          navigate('/verifyEmail');;
         }
       }
     }
@@ -61,6 +68,37 @@ function LogIn() {
       }
       const data = await response.json();
       setAdminEmails(data.adminEmails);
+    } catch (error) {
+      console.error('Error:', error);
+      return null; // Handle the error gracefully
+    }
+  }
+
+  
+  //get deactivated emails
+  const getDeactivatedEmails = async () => {
+    try {
+      const response = await fetch(`/deactivated`);
+      if (!response.ok) {
+        throw new Error('Request failed');
+      }
+      const data = await response.json();
+      setDeactivatedEmails(data.disabledEmails);
+    } catch (error) {
+      console.error('Error:', error);
+      return null; // Handle the error gracefully
+    }
+  }
+
+  //get unverified emails
+  const getUnverifiedUsers = async () => {
+    try {
+      const response = await fetch(`/unverified`);
+      if (!response.ok) {
+        throw new Error('Request failed');
+      }
+      const data = await response.json();
+      setUnverifiedEmails(data.unverifiedEmails);
     } catch (error) {
       console.error('Error:', error);
       return null; // Handle the error gracefully

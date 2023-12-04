@@ -5,6 +5,10 @@ import { useAuth } from './authContext';
 import './App.css'; // Import your CSS file
 import LogIn from './LogIn.js';
 import SignUp from './SignUp.js';
+import AUPText from './AUP.txt';
+import secText from './Security.txt';
+import DMCAN from './DMCAPolicy.txt';
+import DMCAT from './DMCATakedown.txt';
 
 
 function LoggedInUser() {
@@ -23,6 +27,11 @@ function LoggedInUser() {
   const [errorMessage, setErrorMessage] = useState('Your Search Results will be displayed here...');
   //temporary array to hold search results
   const listItems = [];
+  //policies
+  const [AUP, setAUP] = useState('');
+  const [security, setSecurity] = useState('');
+  const [DMCAPolicy, setDMCAPolicy] = useState('');
+  const [DMCATakedown, setDMCATakedown] = useState('');
   //temporary array to hold selected results
   const selectedListItems = [];
   //sorting lists
@@ -52,6 +61,7 @@ function LoggedInUser() {
   //runs when user is successfully logged in in order to find appropriate list names
   useEffect(() => {
     //displats public lists
+    console.log('displaying...');
     displayPublicLists();
     //sets favorite lists from back end
     getFavLists();
@@ -69,6 +79,61 @@ function LoggedInUser() {
       };
       fetchLists();
   }, [publicListsDropDown]);
+  
+  // useEffect(()=>{
+  //   const fetchInitialText = async () => {
+  //     try {
+  //       const response = await fetch('/static/media/AUP.e223bc78bd0a5a8a8f99.txt');
+  //       if (!response.ok) {
+  //         throw new Error('Failed to fetch initial text');
+  //       }
+  //       const data = await response.text();
+  //       setAUP(data);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
+  //   const fetchSecurity = async () => {
+  //     try {
+  //       const response = await fetch(secText);
+  //       if (!response.ok) {
+  //         throw new Error('Failed to fetch initial text');
+  //       }
+  //       const data = await response.text();
+  //       setSecurity(data);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
+  //   const fetchDMCATakedown = async () => {
+  //     try {
+  //       const response = await fetch(DMCAT);
+  //       if (!response.ok) {
+  //         throw new Error('Failed to fetch initial text');
+  //       }
+  //       const data = await response.text();
+  //       setDMCATakedown(data);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
+  //   const fetchDMCAPolicy = async () => {
+  //     try {
+  //       const response = await fetch(DMCAN);
+  //       if (!response.ok) {
+  //         throw new Error('Failed to fetch initial text');
+  //       }
+  //       const data = await response.text();
+  //       setDMCAPolicy(data);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
+  //   fetchSecurity();
+  //   fetchInitialText();
+  //   fetchDMCAPolicy();
+  //   fetchDMCATakedown();
+ // },[]);
 
 
   //check authentication
@@ -185,7 +250,7 @@ function LoggedInUser() {
       }
       //name can only have letters, numbers and spaces
       else if (!/^[a-zA-Z0-9\s-]+$/.test(listName)) {
-        alert('List name can only contain letters numbers and spaces.');
+        alert('List name can only contain letters, numbers, hyphens and spaces.');
       }else{
         const url = `/api/lists/${listName}`;
         try{
@@ -194,7 +259,7 @@ function LoggedInUser() {
           });
           if (response.status === 201) {
             console.log('List created successfully');
-          } else if (response.status === 404) {
+          } else if (response.status === 403) {
             alert('List name already exists, try again');
           } else {
             console.error('Error in creating list', response.status);
@@ -859,8 +924,11 @@ function LoggedInUser() {
 
     {/* Other sections go here */}
     <div id="footer">
-        <label htmlFor="FAQ">FAQ: What Publishers are available</label>
-        <button id="FAQ" onClick={() => { displayPublishers() }}>Available Publishers</button>
+    <button id="FAQ" onClick={() => { alert(security) }}>Security and Privacy Policy</button>
+  <button id="FAQ" onClick={() => { alert(DMCAPolicy) }}>DMCA Notice & Takedown Policy</button>
+  <button id="FAQ" onClick={() => { alert(AUP) }}>AUP</button>
+  <button id="FAQ" onClick={() => { alert(DMCATakedown) }}>DMCA Takedown Procedures</button>
+
         {/* <button onClick={test}>Test</button> */}
     </div>
     <script src="script.js"></script>

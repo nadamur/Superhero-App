@@ -18,7 +18,6 @@ app.use(express.static(clientDir));
 app.use(express.json());
 app.use(userRoutes);
 app.use(cookieParser());
-
 // database connection
 const dbURI = 'mongodb+srv://nadamurad2003:AUeHvPkfedepWhBQ@cluster0.8dcttlz.mongodb.net/node-auth';
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex:true })
@@ -262,28 +261,34 @@ app.post('/api/lists/:listName', (req, res) => {
         if (data){
             try {
                 const jsonData = JSON.parse(data);
-                const newEntry ={
-                    name: listName,
-                    creator: email,
-                    creatorNickname: nickname,
-                    ids: [],
-                    ratings: [],
-                    comments: [],
-                    nicknames: [],
-                    status: [],
-                    reviewDate: [],
-                    visibility: "Private",
-                    lastModified: getCurrentFormattedDateTime(),
-                    description:""
-                };
-                jsonData.push(newEntry);
-                fs.writeFileSync(heroLists, JSON.stringify(jsonData, null, 2), 'utf8');
-                res.sendStatus(201);
-                } catch (parseError) {
-                console.error('Error parsing JSON data:', parseError);
-                res.status(500).json({ error: 'Error parsing JSON data' });
-                return;
+                const list = jsonData.find(l=>l.name ===listName);
+                if (!list){
+                    const newEntry ={
+                        name: listName,
+                        creator: email,
+                        creatorNickname: nickname,
+                        ids: [],
+                        ratings: [],
+                        comments: [],
+                        nicknames: [],
+                        status: [],
+                        reviewDate: [],
+                        visibility: "Private",
+                        lastModified: getCurrentFormattedDateTime(),
+                        description:""
+                    };
+                    jsonData.push(newEntry);
+                    fs.writeFileSync(heroLists, JSON.stringify(jsonData, null, 2), 'utf8');
+                    res.sendStatus(201);
+                    }else{
+                        res.sendStatus(403);
+                    }
                 }
+                catch (parseError) {
+                    console.error('Error parsing JSON data:', parseError);
+                    res.status(500).json({ error: 'Error parsing JSON data' });
+                    return;
+                    }
         }else{
             //if there is no data in the json file, must start with initial data (can not parse)
             const initialData = [{
@@ -311,6 +316,7 @@ app.post('/api/lists/:listName', (req, res) => {
                 }
                 });
             }
+            
     });
 
 });
@@ -422,6 +428,7 @@ app.get('/api/lists/info/:listName', (req, res) => {
 app.put('/api/lists/info/:listName', (req, res) => {
     const { visibility, description } = req.body;
     const listName = req.params.listName;
+    const email = req.session.user.email;
     fs.readFile(heroLists, 'utf-8', (err, data) => {
         if (err) {
             console.error('Error reading JSON file:', err);
@@ -434,6 +441,10 @@ app.put('/api/lists/info/:listName', (req, res) => {
             const list = jsonData.find(l=>l.name ===listName);
             //if found
             if(list){
+                //check whether the user has access to this list
+                if (list.creator !== email){
+                    res.status(403).json({error: 'You do not have access to this list'});
+                }
                 list.visibility = visibility;
                 list.lastModified = getCurrentFormattedDateTime();
                 list.description = description;
@@ -688,7 +699,7 @@ app.get('/api/lists', (req,res)=>{
         try {
         const jsonData = JSON.parse(data);
         const publicLists = jsonData.filter(list => list.visibility === "Public");
-
+        console.log(publicLists);
         const sortedLists = publicLists.sort((a, b) => {
             const dateA = parseDate(a.lastModified);
             const dateB = parseDate(b.lastModified);
@@ -750,6 +761,29 @@ app.put('/api/lists/delete/hero/:listNameAndIds', (req, res) => {
         }
       });
 });
+
+
+//update policies
+app.get('/api/AUP', async (req, res) => {
+    try {
+      const data = await fs.readFile('../AUP.txt', 'utf-8');
+      res.json({ text: data });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+  
+  app.post('/api/updateAUP', async (req, res) => {
+    const { text } = req.body;
+    try {
+      await fs.writeFile('../AUP.txt', text);
+      res.send('Text updated successfully');
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    }
+  });
 
 app.get('/', (req, res) => {
     res.sendFile('index.js', { root: clientDir });

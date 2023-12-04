@@ -15,15 +15,18 @@ function ListDisplayLoggedIn() {
     const [reviews, setReviews] = useState([]);
     //current user
     const [nickname, setNickname] = useState('');
+    //the users lists
+    const [lists, setLists] = useState([]);
 
     const navigate = useNavigate();
 
     //make sure user is authenticated, get their info
     useEffect(() => {
+      //checks user is authenticated
       checkAuthentication();
+      //gets their info
       checkUser();
       getListInfo();
-      console.log(reviews);
     }, []);
 
     useEffect(() => {
@@ -48,6 +51,7 @@ function ListDisplayLoggedIn() {
           fetchHeroes();
           displayHeroes();
       }, [ids]);
+
 
       //adds review to list
     const addReview= async () =>{
@@ -257,7 +261,7 @@ function ListDisplayLoggedIn() {
   return (
     <div>
         <h2 id="title">List Info: {listName}</h2>
-        <button onClick={() =>navigate("/home")}>Done</button>
+        <button onClick={() =>navigate("/loggedin")}>Done</button>
         <div class="heroes-container">
     <h2>Heroes</h2>
         {heroes.length > 0 && <ul>{heroes}</ul>}

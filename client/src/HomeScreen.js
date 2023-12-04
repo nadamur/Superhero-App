@@ -13,6 +13,8 @@ import UpdatePass from './UpdatePass.js';
 import ListDisplayAdmin from './ListDisplayAdmin.js';
 import LoggedInAdmin from './LoggedInAdmin.js';
 import DisableAccounts from './DisableAccounts.js';
+import VerifiedEmail from './VerifiedEmail.js';
+import VerifyEmail from './VerifyEmail.js';
 import { useAuth, AuthProvider } from './authContext';
 
 
@@ -21,6 +23,8 @@ function HomeScreen() {
     <AuthProvider>
       <Router>
         <Routes>
+          <Route path="/verifyEmail" element={<VerifyEmail/>} />
+          <Route path="/verifiedEmail" element={<VerifiedEmail/>} />
           <Route path="/login" element={<LogIn/>} />
           <Route path="/signup" element={<SignUp/>} />
           <Route path="/listInfo/:listName" element={<ListInfo/>}/>
