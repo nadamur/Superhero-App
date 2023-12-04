@@ -5,10 +5,7 @@ import { useAuth } from './authContext';
 import './App.css'; // Import your CSS file
 import LogIn from './LogIn.js';
 import SignUp from './SignUp.js';
-import AUPText from './AUP.txt';
-import secText from './Security.txt';
-import DMCAN from './DMCAPolicy.txt';
-import DMCAT from './DMCATakedown.txt';
+
 
 
 function LoggedInUser() {
@@ -27,11 +24,6 @@ function LoggedInUser() {
   const [errorMessage, setErrorMessage] = useState('Your Search Results will be displayed here...');
   //temporary array to hold search results
   const listItems = [];
-  //policies
-  const [AUP, setAUP] = useState('');
-  const [security, setSecurity] = useState('');
-  const [DMCAPolicy, setDMCAPolicy] = useState('');
-  const [DMCATakedown, setDMCATakedown] = useState('');
   //temporary array to hold selected results
   const selectedListItems = [];
   //sorting lists
@@ -80,62 +72,6 @@ function LoggedInUser() {
       fetchLists();
   }, [publicListsDropDown]);
   
-  // useEffect(()=>{
-  //   const fetchInitialText = async () => {
-  //     try {
-  //       const response = await fetch('/static/media/AUP.e223bc78bd0a5a8a8f99.txt');
-  //       if (!response.ok) {
-  //         throw new Error('Failed to fetch initial text');
-  //       }
-  //       const data = await response.text();
-  //       setAUP(data);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   };
-  //   const fetchSecurity = async () => {
-  //     try {
-  //       const response = await fetch(secText);
-  //       if (!response.ok) {
-  //         throw new Error('Failed to fetch initial text');
-  //       }
-  //       const data = await response.text();
-  //       setSecurity(data);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   };
-  //   const fetchDMCATakedown = async () => {
-  //     try {
-  //       const response = await fetch(DMCAT);
-  //       if (!response.ok) {
-  //         throw new Error('Failed to fetch initial text');
-  //       }
-  //       const data = await response.text();
-  //       setDMCATakedown(data);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   };
-  //   const fetchDMCAPolicy = async () => {
-  //     try {
-  //       const response = await fetch(DMCAN);
-  //       if (!response.ok) {
-  //         throw new Error('Failed to fetch initial text');
-  //       }
-  //       const data = await response.text();
-  //       setDMCAPolicy(data);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   };
-  //   fetchSecurity();
-  //   fetchInitialText();
-  //   fetchDMCAPolicy();
-  //   fetchDMCATakedown();
- // },[]);
-
-
   //check authentication
   const checkAuthentication = async () => {
     let tempLogInStatus = "";
@@ -924,10 +860,9 @@ function LoggedInUser() {
 
     {/* Other sections go here */}
     <div id="footer">
-    <button id="FAQ" onClick={() => { alert(security) }}>Security and Privacy Policy</button>
-  <button id="FAQ" onClick={() => { alert(DMCAPolicy) }}>DMCA Notice & Takedown Policy</button>
-  <button id="FAQ" onClick={() => { alert(AUP) }}>AUP</button>
-  <button id="FAQ" onClick={() => { alert(DMCATakedown) }}>DMCA Takedown Procedures</button>
+    <button id="FAQ" onClick={() => { navigate('/displayPolicyUser/Security') }}>Security and Privacy Policy</button>
+        <button id="FAQ" onClick={() => { navigate('/displayPolicyUser/DMCA') }}>DMCA Notice & Takedown Policy</button>
+        <button id="FAQ" onClick={() => { navigate('/displayPolicyUser/AUP') }}>AUP</button>
 
         {/* <button onClick={test}>Test</button> */}
     </div>

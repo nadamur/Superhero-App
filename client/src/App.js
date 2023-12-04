@@ -7,9 +7,6 @@ import LoggedInUser from './LoggedInUser.js';
 import ListInfo from './FavListInfo.js';
 import ListDisplay from './ListDisplay.js';
 import { useAuth, AuthProvider } from './authContext';
-import AUPText from './AUP.txt';
-import secText from './Security.txt';
-import DMCAN from './DMCAPolicy.txt';
 import './App.css'; // Import your CSS file
 
 
@@ -39,48 +36,7 @@ function App() {
   //public lists
   const [publicLists, setPublicLists] = useState([]);
   const [publicListsDropDown, setPublicListsDropDown] = useState([]);
-  useEffect(()=>{
-    console.log(AUPText)
-    const fetchInitialText = async () => {
-      try {
-        const response = await fetch('/static/media/AUP.e223bc78bd0a5a8a8f99.txt');
-        if (!response.ok) {
-          throw new Error('Failed to fetch initial text');
-        }
-        const data = await response.text();
-        setAUP(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    const fetchSecurity = async () => {
-      try {
-        const response = await fetch(secText);
-        if (!response.ok) {
-          throw new Error('Failed to fetch initial text');
-        }
-        const data = await response.text();
-        setSecurity(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    const fetchDMCAPolicy = async () => {
-      try {
-        const response = await fetch(DMCAN);
-        if (!response.ok) {
-          throw new Error('Failed to fetch initial text');
-        }
-        const data = await response.text();
-        setDMCAPolicy(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchSecurity();
-    fetchInitialText();
-    fetchDMCAPolicy();
-  },[]);
+
   useEffect(() => {
 
     checkAuthentication();
@@ -617,10 +573,10 @@ function App() {
           
       </div>
       <div id="footer">
-        <button id="FAQ" onClick={() => { alert(security) }}>Security and Privacy Policy</button>
-<button id="FAQ" onClick={() => { alert(DMCAPolicy) }}>DMCA Notice & Takedown Policy</button>
+        <button id="FAQ" onClick={() => { navigate('/displayPolicy/Security') }}>Security and Privacy Policy</button>
+        <button id="FAQ" onClick={() => { navigate('/displayPolicy/DMCA') }}>DMCA Notice & Takedown Policy</button>
 
-<button id="FAQ" onClick={() => { alert(AUP) }}>AUP</button>
+        <button id="FAQ" onClick={() => { navigate('/displayPolicy/AUP') }}>AUP</button>
     </div>
         <script src="script.js"></script>
       </div>

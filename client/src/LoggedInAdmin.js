@@ -5,10 +5,6 @@ import { useAuth } from './authContext';
 import './App.css'; // Import your CSS file
 import LogIn from './LogIn.js';
 import SignUp from './SignUp.js';
-import AUPText from './AUP.txt';
-import secText from './Security.txt';
-import DMCAN from './DMCAPolicy.txt';
-import DMCAT from './DMCATakedown.txt';
 
 
 function LoggedInAdmin() {
@@ -55,63 +51,6 @@ function LoggedInAdmin() {
     checkAuthentication();
     checkUser();
   },[]);
-
-  useEffect(()=>{
-    const fetchInitialText = async () => {
-      try {
-        const response = await fetch('/static/media/AUP.e223bc78bd0a5a8a8f99.txt');
-        if (!response.ok) {
-          throw new Error('Failed to fetch initial text');
-        }
-        const data = await response.text();
-        setAUP(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    const fetchSecurity = async () => {
-      try {
-        const response = await fetch(secText);
-        if (!response.ok) {
-          throw new Error('Failed to fetch initial text');
-        }
-        const data = await response.text();
-        setSecurity(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    const fetchDMCATakedown = async () => {
-      try {
-        const response = await fetch(DMCAT);
-        if (!response.ok) {
-          throw new Error('Failed to fetch initial text');
-        }
-        const data = await response.text();
-        setDMCATakedown(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    const fetchDMCAPolicy = async () => {
-      try {
-        const response = await fetch(DMCAN);
-        if (!response.ok) {
-          throw new Error('Failed to fetch initial text');
-        }
-        const data = await response.text();
-        setDMCAPolicy(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchSecurity();
-    fetchInitialText();
-    fetchDMCAPolicy();
-    fetchDMCATakedown();
-  },[]);
-
-
 
   //runs when user is successfully logged in in order to find appropriate list names
   useEffect(() => {
@@ -697,8 +636,8 @@ function LoggedInAdmin() {
     const newPolicy = prompt("Enter the new AUP: ");
     setAUP(newPolicy);
     try {
-        await fetch('/api/updateAUP', {
-          method: 'POST',
+        await fetch('/api/changeAUP', {
+          method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -709,12 +648,37 @@ function LoggedInAdmin() {
       }
   }
   //function to change DMCA Notice
-  const changeDMCA = ()=>{
+  const changeDMCA = async ()=>{
     const newPolicy = prompt("Enter the new DMCA: ");
+    setDMCAPolicy(newPolicy);
+    try {
+        await fetch('/api/changeDMCA', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ text: newPolicy }),
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    
   }
   //function to security
-  const changeSecurity = ()=>{
+  const changeSecurity = async ()=>{
     const newPolicy = prompt("Enter the new Security Policy: ");
+    setSecurity(newPolicy);
+    try {
+        await fetch('/api/changeSecurity', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ text: newPolicy }),
+        });
+      } catch (error) {
+        console.error(error);
+      }
   }
   
   // Function to handle dropdown click
@@ -953,14 +917,13 @@ function LoggedInAdmin() {
     {/* Other sections go here */}
     <div id="footer">
     <button id="FAQ" onClick={() => { displayAccountCentre()}}>Account Centre</button>
-    <button id="FAQ" onClick={() => { alert(security) }}>Edit Security and Privacy Policy</button>
-<button id="FAQ" onClick={() => { alert(DMCAPolicy) }}>Edit DMCA Notice & Takedown Policy</button>
-
-<button id="FAQ" onClick={changeAUP}>Edit AUP</button>
-
-
-<button id="FAQ" onClick={() => { alert(DMCATakedown) }}>DMCA Takedown Procedures</button>
- {/* <button onClick={test}>Test</button> */}
+    <button id="FAQ" onClick={() => { navigate('/displayPolicy/Security') }}>Security and Privacy Policy</button>
+        <button id="FAQ" onClick={() => { navigate('/displayPolicy/DMCA') }}>DMCA Notice & Takedown Policy</button>
+        <button id="FAQ" onClick={() => { navigate('/displayPolicy/AUP') }}>AUP</button>
+        <button id="FAQ" onClick={() => { navigate('/displayPolicy/DMCATakedown') }}>DMCA Takedown Procedure</button>
+        <button id="FAQ" onClick={() =>changeSecurity}>EDIT Security and Privacy Policy</button>
+        <button id="FAQ" onClick={() => changeDMCA}>EDIT DMCA Notice & Takedown Policy</button>
+        <button id="FAQ" onClick={() => changeAUP()}>EDIT AUP</button>
     </div>
     <script src="script.js"></script>
     </div>

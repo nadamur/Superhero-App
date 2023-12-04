@@ -15,5 +15,5 @@ Dispute Claim Log:
 Date | Claimant | Disputed Content | Status
 Disabling and Restoring Tools:
 
-Disable Content Tool: Temporarily hides content with alleged copyright violations.
+Disable Content Tool: Temporarily hides content with alleged copyright violations. Temporarily disables user accounts.
 Restore Content Tool: Restores content after resolution.

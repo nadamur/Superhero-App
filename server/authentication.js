@@ -150,10 +150,11 @@ router.put("/updateStatus", async (req,res) =>{
 //verifies user
 router.put("/verifyEmail", async (req,res) =>{
   const email = req.session.user.email;
+  console.log('verifying user ' + email);
   try {
     // update user status in the database using the email
     const updatedUser = await User.findOneAndUpdate({ email }, { verification: 'verified' }, { new: true });
-
+    console.log('updated: ' + updatedUser)
     if (updatedUser) {
       res.json({ success: true, user: updatedUser });
     } else {

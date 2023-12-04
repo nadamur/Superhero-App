@@ -404,7 +404,6 @@ app.get('/api/lists/info/:listName', (req, res) => {
             //if the name does exist, return all info
             const list = jsonData.find(list => list.name === listName);
             if(list){
-                console.log(list.description);
                 const {ids, visibility, lastModified, description} = list;
                 res.json({ids, visibility, lastModified, description});
                 return;
@@ -699,7 +698,6 @@ app.get('/api/lists', (req,res)=>{
         try {
         const jsonData = JSON.parse(data);
         const publicLists = jsonData.filter(list => list.visibility === "Public");
-        console.log(publicLists);
         const sortedLists = publicLists.sort((a, b) => {
             const dateA = parseDate(a.lastModified);
             const dateB = parseDate(b.lastModified);
@@ -725,7 +723,6 @@ app.get('/api/lists', (req,res)=>{
 //delete a hero from a list
 app.put('/api/lists/delete/hero/:listNameAndIds', (req, res) => {
     const listName = req.params.listNameAndIds;
-    console.log(listName);
     // assuming we are receiving the URL in the format: /api/lists/visibility/myList?id=1
     const id = req.query.id;
     fs.readFile(heroLists, 'utf-8', (err, data) => {
@@ -763,27 +760,132 @@ app.put('/api/lists/delete/hero/:listNameAndIds', (req, res) => {
 });
 
 
-//update policies
-app.get('/api/AUP', async (req, res) => {
-    try {
-      const data = await fs.readFile('../AUP.txt', 'utf-8');
-      res.json({ text: data });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Internal Server Error');
-    }
+// returns AUP text
+app.get('/api/getAUP', async (req, res) => {
+    fs.readFile('AUP.txt', 'utf-8', (err, data) => {
+        if (err) {
+          console.error('Error reading JSON file:', err);
+          res.status(500).json({ error: 'Internal server error' });
+        }
+        try{
+            res.json({text:data});
+        }
+        catch(error){
+            console.error('Error parsing JSON data:', error);
+            res.status(500).json({ error: 'Error parsing JSON data' });
+        }
+      });
+  });
+
+  // returns security text
+app.get('/api/getSecurity', async (req, res) => {
+    fs.readFile('Security.txt', 'utf-8', (err, data) => {
+        if (err) {
+          console.error('Error reading JSON file:', err);
+          res.status(500).json({ error: 'Internal server error' });
+        }
+        try{
+            res.json({text:data});
+        }
+        catch(error){
+            console.error('Error parsing JSON data:', error);
+            res.status(500).json({ error: 'Error parsing JSON data' });
+        }
+      });
   });
   
-  app.post('/api/updateAUP', async (req, res) => {
-    const { text } = req.body;
-    try {
-      await fs.writeFile('../AUP.txt', text);
-      res.send('Text updated successfully');
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Internal Server Error');
-    }
+
+    // returns dmca text
+app.get('/api/getDMCAPolicy', async (req, res) => {
+    fs.readFile('DMCAPolicy.txt', 'utf-8', (err, data) => {
+        if (err) {
+          console.error('Error reading JSON file:', err);
+          res.status(500).json({ error: 'Internal server error' });
+        }
+        try{
+            res.json({text:data});
+        }
+        catch(error){
+            console.error('Error parsing JSON data:', error);
+            res.status(500).json({ error: 'Error parsing JSON data' });
+        }
+      });
   });
+
+      // returns dmca admin text
+app.get('/api/getDMCATakedown', async (req, res) => {
+    fs.readFile('DMCATakedown.txt', 'utf-8', (err, data) => {
+        if (err) {
+          console.error('Error reading JSON file:', err);
+          res.status(500).json({ error: 'Internal server error' });
+        }
+        try{
+            res.json({text:data});
+        }
+        catch(error){
+            console.error('Error parsing JSON data:', error);
+            res.status(500).json({ error: 'Error parsing JSON data' });
+        }
+      });
+  });
+
+  
+//new AUP
+app.put('/api/changeAUP', (req, res) => {
+    const {text} = req.body
+    fs.readFile('AUP.txt', 'utf-8', (err, data) => {
+        if (err) {
+            console.error('Error reading file:', err);
+            res.status(500).json({ error: 'Internal server error' });
+            return;
+        }
+        try{
+            fs.writeFileSync('AUP.txt', text , 'utf8');
+    }
+    catch(error){
+        console.error('Error parsing JSON data:', error);
+        res.status(500).json({ error: 'Error parsing JSON data' });
+    }
+    });
+});
+
+//new DMCA
+app.put('/api/changeDMCA', (req, res) => {
+    const {text} = req.body
+    fs.readFile('DMCAPolicy.txt', 'utf-8', (err, data) => {
+        if (err) {
+            console.error('Error reading file:', err);
+            res.status(500).json({ error: 'Internal server error' });
+            return;
+        }
+        try{
+            fs.writeFileSync('DMCAPolicy.txt', text , 'utf8');
+    }
+    catch(error){
+        console.error('Error parsing JSON data:', error);
+        res.status(500).json({ error: 'Error parsing JSON data' });
+    }
+    });
+});
+
+//new Security
+app.put('/api/changeSecurity', (req, res) => {
+    const {text} = req.body
+    fs.readFile('Security.txt', 'utf-8', (err, data) => {
+        if (err) {
+            console.error('Error reading file:', err);
+            res.status(500).json({ error: 'Internal server error' });
+            return;
+        }
+        try{
+            fs.writeFileSync('Security.txt', text , 'utf8');
+    }
+    catch(error){
+        console.error('Error parsing JSON data:', error);
+        res.status(500).json({ error: 'Error parsing JSON data' });
+    }
+    });
+});
 
 app.get('/', (req, res) => {
     res.sendFile('index.js', { root: clientDir });

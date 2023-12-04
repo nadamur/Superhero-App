@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
       type: String,
       default: 'enabled'
     },
-    verificiation:{
+    verification:{
       type: String,
       default: 'unverified'
     }
@@ -96,7 +96,7 @@ userSchema.statics.login = async function(email, password) {
     //function to find all unverified accounts
     userSchema.statics.findUnverifiedUsers = async function () {
       try {
-        const unverifiedEmails = await this.find({ verificiation: 'unverified' }).select('email');
+        const unverifiedEmails = await this.find({ verification: 'unverified' }).select('email');
         return unverifiedEmails.map(user => user.email);
       } catch (error) {
         console.error('Error finding deactivated emails:', error);

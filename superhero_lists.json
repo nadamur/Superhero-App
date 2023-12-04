@@ -105,5 +105,19 @@
     "visibility": "Public",
     "lastModified": "04-12-23 16:51:37",
     "description": "new description"
+  },
+  {
+    "name": "list4",
+    "creator": "testing@gmail.com",
+    "creatorNickname": "testing",
+    "ids": [],
+    "ratings": [],
+    "comments": [],
+    "nicknames": [],
+    "status": [],
+    "reviewDate": [],
+    "visibility": "Private",
+    "lastModified": "04-12-23 18:00:43",
+    "description": ""
   }
 ]

@@ -15,6 +15,8 @@ import LoggedInAdmin from './LoggedInAdmin.js';
 import DisableAccounts from './DisableAccounts.js';
 import VerifiedEmail from './VerifiedEmail.js';
 import VerifyEmail from './VerifyEmail.js';
+import DisplayPolicy from './DisplayPolicy.js';
+import DisplayPolicyUser from './DisplayPolicyUser.js';
 import { useAuth, AuthProvider } from './authContext';
 
 
@@ -25,6 +27,8 @@ function HomeScreen() {
         <Routes>
           <Route path="/verifyEmail" element={<VerifyEmail/>} />
           <Route path="/verifiedEmail" element={<VerifiedEmail/>} />
+          <Route path="/displayPolicy/:policyName" element={<DisplayPolicy/>} />
+          <Route path="/displayPolicyUser/:policyName" element={<DisplayPolicyUser/>} />
           <Route path="/login" element={<LogIn/>} />
           <Route path="/signup" element={<SignUp/>} />
           <Route path="/listInfo/:listName" element={<ListInfo/>}/>

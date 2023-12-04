@@ -23,6 +23,7 @@ function LogIn() {
   useEffect(()=>{
     getAdminEmails();
     getDeactivatedEmails();
+    getUnverifiedUsers();
   },[])
   const logIn = async ()=>{
     try {
@@ -50,7 +51,10 @@ function LogIn() {
         }else if (deactivatedEmails.includes(email)){
           setEmailError('Your account has been deactivated. Contact admin@gmail.com for more info.');
         }else if (unverifiedEmails.includes(email)){
-          navigate('/verifyEmail');;
+          console.log('unverified');
+          navigate('/verifyEmail');
+        }else{
+          navigate('/loggedin')
         }
       }
     }
@@ -105,25 +109,6 @@ function LogIn() {
     }
   }
 
-  // //check authentication
-  // const checkAuthentication = async () => {
-  //   try {
-  //     const response = await fetch(`/login`);
-  //     if (!response.ok) {
-  //       //if no heroes found, displays message
-  //       console.log("No race results");
-  //     }else{
-  //       const data = await response.json();
-  //     }
-  //   } catch (error) {
-  //     console.error('Error:', error);
-  //   }
-  // };
-
-  // //this will run when the authentication goes through
-  // useEffect(() => {
-  //   checkAuthentication();
-  // }, []);
   
   return (
     <div>
