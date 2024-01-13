@@ -779,7 +779,7 @@ app.get('/api/getAUP', async (req, res) => {
 
   // returns security text
 app.get('/api/getSecurity', async (req, res) => {
-    fs.readFile('Security.txt', 'utf-8', (err, data) => {
+    fs.readFile('Policies/Security.txt', 'utf-8', (err, data) => {
         if (err) {
           console.error('Error reading JSON file:', err);
           res.status(500).json({ error: 'Internal server error' });
@@ -852,14 +852,14 @@ app.put('/api/changeAUP', (req, res) => {
 //new DMCA
 app.put('/api/changeDMCA', (req, res) => {
     const {text} = req.body
-    fs.readFile('DMCAPolicy.txt', 'utf-8', (err, data) => {
+    fs.readFile('Policies/DMCAPolicy.txt', 'utf-8', (err, data) => {
         if (err) {
             console.error('Error reading file:', err);
             res.status(500).json({ error: 'Internal server error' });
             return;
         }
         try{
-            fs.writeFileSync('DMCAPolicy.txt', text , 'utf8');
+            fs.writeFileSync('Policies/DMCAPolicy.txt', text , 'utf8');
     }
     catch(error){
         console.error('Error parsing JSON data:', error);
@@ -871,14 +871,14 @@ app.put('/api/changeDMCA', (req, res) => {
 //new Security
 app.put('/api/changeSecurity', (req, res) => {
     const {text} = req.body
-    fs.readFile('Security.txt', 'utf-8', (err, data) => {
+    fs.readFile('Policies/Security.txt', 'utf-8', (err, data) => {
         if (err) {
             console.error('Error reading file:', err);
             res.status(500).json({ error: 'Internal server error' });
             return;
         }
         try{
-            fs.writeFileSync('Security.txt', text , 'utf8');
+            fs.writeFileSync('Policies/Security.txt', text , 'utf8');
     }
     catch(error){
         console.error('Error parsing JSON data:', error);
