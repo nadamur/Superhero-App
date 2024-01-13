@@ -1,11 +1,9 @@
 // Login.js
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from './authContext';
 
 function LogIn() {
   //authentication
-  //const {isAuthenticated, login, logout} = useAuth();
   //user info
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
