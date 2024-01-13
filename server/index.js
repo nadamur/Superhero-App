@@ -762,7 +762,7 @@ app.put('/api/lists/delete/hero/:listNameAndIds', (req, res) => {
 
 // returns AUP text
 app.get('/api/getAUP', async (req, res) => {
-    fs.readFile('AUP.txt', 'utf-8', (err, data) => {
+    fs.readFile('Policies/AUP.txt', 'utf-8', (err, data) => {
         if (err) {
           console.error('Error reading JSON file:', err);
           res.status(500).json({ error: 'Internal server error' });
@@ -833,14 +833,14 @@ app.get('/api/getDMCATakedown', async (req, res) => {
 //new AUP
 app.put('/api/changeAUP', (req, res) => {
     const {text} = req.body
-    fs.readFile('AUP.txt', 'utf-8', (err, data) => {
+    fs.readFile('Policies/AUP.txt', 'utf-8', (err, data) => {
         if (err) {
             console.error('Error reading file:', err);
             res.status(500).json({ error: 'Internal server error' });
             return;
         }
         try{
-            fs.writeFileSync('AUP.txt', text , 'utf8');
+            fs.writeFileSync('Policies/AUP.txt', text , 'utf8');
     }
     catch(error){
         console.error('Error parsing JSON data:', error);

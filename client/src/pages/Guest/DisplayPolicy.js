@@ -62,7 +62,7 @@ function DisplayPolicy() {
   return (
     <div>
         <h2 id="title">{policyName}</h2>
-        <button onClick={() =>navigate("/home")}>Done</button>
+        <button onClick={() =>navigate("/")}>Done</button>
         <p>{p}</p>
     </div>
     
