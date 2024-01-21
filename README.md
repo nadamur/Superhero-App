@@ -1,6 +1,6 @@
-# Superhero App
+# Superheroes Hub
 
-Welcome to the Superheroes App, where superhero enthusiasts worldwide can unleash their inner fandom and create personalized hero lists. This web app is designed to cater to the diverse interests of superhero fans, allowing them to discover, share, and engage with their favorite characters. This application utilizes JSON web tokens to guarantee the safety and security of all user accounts!
+Welcome to the Superheroes Hub, where superhero enthusiasts worldwide can unleash their inner fandom and create personalized hero lists. This web app is designed to cater to the diverse interests of superhero fans, allowing them to discover, share, and engage with their favorite characters. This application utilizes JSON web tokens to guarantee the safety and security of all user accounts!
 
 ## Features:
 
@@ -9,7 +9,7 @@ Both authenticated and non-authenticated Superhero fans can dive into an extensi
 ![image](https://github.com/nadamur/Superhero-App/assets/114004182/d301d9cf-0194-4f6b-b99e-e53d1e1c1ac4)
 
 ### 2. Create Customizable Hero Lists
-Authenticaed users have the power to curate their own hero lists by selecting their desired heroes from their search results.
+Authenticated users have the power to curate their own hero lists by selecting their desired heroes from their search results.
 ![image](https://github.com/nadamur/Superhero-App/assets/114004182/2d72e2e2-7d60-411c-9869-bc025e518308)
 
 ### 3. Public and Private Lists
