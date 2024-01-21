@@ -5,7 +5,9 @@ Welcome to the Superhero App, where superhero enthusiasts worldwide can unleash 
 ## Features:
 
 ### 1. Explore the Extensive Hero Database
-Superhero fans can dive into an extensive database to search for their favorite heroes. The app provides a seamless and intuitive experience for discovering both well-known and lesser-known superheroes based on various criteria such as name, power, race or publisher.
+Superhero fans can dive into an extensive database to search for their favorite heroes. The app provides a seamless and intuitive experience for discovering both well-known and lesser-known superheroes based on various criteria such as name, power, race or publisher (or all 4!)
+![image](https://github.com/nadamur/Superhero-App/assets/114004182/47fec059-bc7f-403f-9249-90b089a81d4d)
+
 
 ### 2. Create Customizable Hero Lists
 Users have the power to curate their own hero lists, tailoring them to their preferences. These lists are customizable and can be either shared with the public or kept private for a more personal touch.
