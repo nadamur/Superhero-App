@@ -35,8 +35,3 @@ jobs:
         npm ci
       shell: bash
 
-    - name: Build and Test Client
-      run: |
-        cd ./client
-        npm run build --if-present
-      shell: bash

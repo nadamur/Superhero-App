@@ -1,19 +1,22 @@
 // App.js
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
-import { useAuth } from './authContext';
-import './App.css'; // Import your CSS file
-import LogIn from './LogIn.js';
-import SignUp from './SignUp.js';
+import '../../styles/App.css';
+import LogIn from '../Guest/LogIn.js';
+import SignUp from '../Guest/SignUp.js';
 
 
-
-function LoggedInUser() {
+function LoggedInAdmin() {
   //authentication
   const [logInStatus, setLogInStatus] = useState("");
   const [loggedInNickname, setLoggedInNickname] = useState("");
   const [loggedInEmail, setLoggedInEmail] = useState("");
   const navigate = useNavigate();
+  //policies
+  const [AUP, setAUP] = useState('');
+  const [security, setSecurity] = useState('');
+  const [DMCAPolicy, setDMCAPolicy] = useState('');
+  const [DMCATakedown, setDMCATakedown] = useState('');
   //search related
   const [raceInput, setRaceInput] = useState('');
   const [nameInput, setNameInput] = useState('');
@@ -46,14 +49,11 @@ function LoggedInUser() {
   useEffect(()=>{
     checkAuthentication();
     checkUser();
-  },[])
-
-
+  },[]);
 
   //runs when user is successfully logged in in order to find appropriate list names
   useEffect(() => {
     //displats public lists
-    console.log('displaying...');
     displayPublicLists();
     //sets favorite lists from back end
     getFavLists();
@@ -71,7 +71,8 @@ function LoggedInUser() {
       };
       fetchLists();
   }, [publicListsDropDown]);
-  
+
+
   //check authentication
   const checkAuthentication = async () => {
     let tempLogInStatus = "";
@@ -186,7 +187,7 @@ function LoggedInUser() {
       }
       //name can only have letters, numbers and spaces
       else if (!/^[a-zA-Z0-9\s-]+$/.test(listName)) {
-        alert('List name can only contain letters, numbers, hyphens and spaces.');
+        alert('List name can only contain letters numbers and spaces.');
       }else{
         const url = `/api/lists/${listName}`;
         try{
@@ -331,8 +332,13 @@ function LoggedInUser() {
   //display list info
   const displayList = (name)=>{
     const n = name;
-    navigate(`/listDisplayAndReview/${n}`);
+    navigate(`/listDisplayAdmin/${n}`);
   }
+    //display list info
+    const displayAccountCentre = (name)=>{
+        const n = name;
+        navigate(`/accountCentre`);
+      }
    //update password
    const updatePass = ()=>{
     navigate(`/updatePassword`);
@@ -624,6 +630,55 @@ function LoggedInUser() {
   
     return average;
   };
+  //function to change AUP
+  const changeAUP = async ()=>{
+    const newPolicy = prompt("Enter the new AUP: ");
+    setAUP(newPolicy);
+    try {
+        await fetch('/api/changeAUP', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ text: newPolicy }),
+        });
+      } catch (error) {
+        console.error(error);
+      }
+  }
+  //function to change DMCA Notice
+  const changeDMCA = async ()=>{
+    const newPolicy = prompt("Enter the new DMCA: ");
+    setDMCAPolicy(newPolicy);
+    try {
+        await fetch('/api/changeDMCA', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ text: newPolicy }),
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    
+  }
+  //function to security
+  const changeSecurity = async ()=>{
+    const newPolicy = prompt("Enter the new Security Policy: ");
+    setSecurity(newPolicy);
+    try {
+        await fetch('/api/changeSecurity', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ text: newPolicy }),
+        });
+      } catch (error) {
+        console.error(error);
+      }
+  }
   
   // Function to handle dropdown click
   const toggleDropdown = (event, index) => {
@@ -737,7 +792,7 @@ function LoggedInUser() {
         <li>
             <button className="nav-button" onClick={logOut}>Log Out</button>
         </li>
-        <li id="welcomeMessage">Welcome, {loggedInNickname}</li>
+        <li id="welcomeMessage">Welcome, Admin {loggedInNickname}</li>
         <li>
         <button className="nav-button" onClick={updatePass}>Update Password</button>
         </li>
@@ -860,15 +915,15 @@ function LoggedInUser() {
 
     {/* Other sections go here */}
     <div id="footer">
-    <button id="FAQ" onClick={() => { navigate('/displayPolicyUser/Security') }}>Security and Privacy Policy</button>
-        <button id="FAQ" onClick={() => { navigate('/displayPolicyUser/DMCA') }}>DMCA Notice & Takedown Policy</button>
-        <button id="FAQ" onClick={() => { navigate('/displayPolicyUser/AUP') }}>AUP</button>
-
-        {/* <button onClick={test}>Test</button> */}
+    <button id="FAQ" onClick={() => { displayAccountCentre()}}>Account Centre</button>
+        <button id="FAQ" onClick={() => { navigate('/displayPolicy/DMCATakedown') }}>DMCA Takedown Procedure</button>
+        <button id="FAQ" onClick={() =>changeSecurity}>EDIT Security and Privacy Policy</button>
+        <button id="FAQ" onClick={() => changeDMCA}>EDIT DMCA Notice & Takedown Policy</button>
+        <button id="FAQ" onClick={() => changeAUP()}>EDIT AUP</button>
     </div>
     <script src="script.js"></script>
     </div>
   );
 }
 
-export default LoggedInUser;
+export default LoggedInAdmin;
