@@ -33,7 +33,7 @@
       "newuser"
     ],
     "status": [
-      "Public"
+      "Hidden"
     ],
     "reviewDate": [
       "03-12-23 18:18:05"
@@ -110,14 +110,46 @@
     "name": "list4",
     "creator": "testing@gmail.com",
     "creatorNickname": "testing",
-    "ids": [],
+    "ids": [
+      "0",
+      "1",
+      "0",
+      "2"
+    ],
     "ratings": [],
     "comments": [],
     "nicknames": [],
     "status": [],
     "reviewDate": [],
-    "visibility": "Private",
-    "lastModified": "04-12-23 18:00:43",
+    "visibility": "Public",
+    "lastModified": "14-12-23 02:47:30",
+    "description": "hello"
+  },
+  {
+    "name": "p list",
+    "creator": "testing@gmail.com",
+    "creatorNickname": "testing",
+    "ids": [
+      "0",
+      "2"
+    ],
+    "ratings": [
+      "4"
+    ],
+    "comments": [
+      "nice"
+    ],
+    "nicknames": [
+      "testing"
+    ],
+    "status": [
+      "Hidden"
+    ],
+    "reviewDate": [
+      "14-12-23 02:48:34"
+    ],
+    "visibility": "Public",
+    "lastModified": "08-12-23 15:06:20",
     "description": ""
   }
 ]
